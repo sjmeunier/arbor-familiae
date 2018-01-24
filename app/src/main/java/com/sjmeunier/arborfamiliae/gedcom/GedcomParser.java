@@ -337,6 +337,15 @@ public class GedcomParser {
             {
                 case "NAME":
                     currentSubRecord = GedcomSubRecordEnum.IndividualName;
+                    if (lineArray.length > 2) {
+                        if (lineArray[2].contains("/")) {
+                            String[] name = lineArray[2].split("/", 3);
+                            currentGedcomIndividual.givenName = name[0].trim();
+                            currentGedcomIndividual.surname = name[1].trim();
+                        } else {
+                            currentGedcomIndividual.givenName = lineArray[2].trim();
+                        }
+                    }
                     break;
                 case "SEX":
                     if (lineArray[2].equals("M"))

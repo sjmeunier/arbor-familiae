@@ -20,7 +20,7 @@ import java.util.List;
         Source.class,
         Note.class,
         Place.class
-    }, version = 8, exportSchema = false)
+    }, version = 9, exportSchema = false)
 @TypeConverters({DateTypeConverter.class, GenderEnumConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -41,11 +41,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase getDatabase(Context context) {
         if (INSTANCE == null) {
             INSTANCE = Room.databaseBuilder(context, AppDatabase.class, "arborfamiliae-database")
-//Room.inMemoryDatabaseBuilder(context.getApplicationContext(), AppDatabase.class)
-                            // To simplify the exercise, allow queries on the main thread.
-                            // Don't do this on a real app!
                             .allowMainThreadQueries()
-                            // recreate the database if necessary
                             .fallbackToDestructiveMigration()
                             .build();
         }

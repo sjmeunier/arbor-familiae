@@ -21,8 +21,8 @@ public class Family {
         this.treeId = treeId;
         this.familyId = familyId;
 
-        this.husbandId = 0;
-        this.wifeId = 0;
+        this.husbandId = -1;
+        this.wifeId = -1;
         this.marriageDate = "";
         this.marriagePlace = -1;
     }

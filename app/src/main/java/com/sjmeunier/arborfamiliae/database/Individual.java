@@ -52,7 +52,7 @@ public class Individual {
         this.baptismPlace = -1;
         this.burialDate = "";
         this.burialPlace = -1;
-        this.parentFamilyId = 0;
+        this.parentFamilyId = -1;
 
     }
 

@@ -36,6 +36,7 @@
     <string name="action_tree">Tree</string>
     <string name="action_trees">Change Trees</string>
     <string name="action_recent">Recent</string>
+    <string name="action_relationship">Relationship</string>
 
     <string name="action_set_home_person">Set as root</string>
     <string name="action_jump_to_root">Jump to root</string>
@@ -73,6 +74,7 @@
     <string name="label_occupation">Occupation</string>
     <string name="label_father">Father</string>
     <string name="label_mother">Mother</string>
+    <string name="label_gedcomid">Gedcom ID</string>
 
     <string name="preferences_general">General</string>
     <string name="preferences_title_generations">Generations in charts</string>
@@ -86,4 +88,5 @@
     <string name="preferences_heatmap">Heatmap</string>
     <string name="preferences_title_heatmap_events">Heatmap events</string>
     <string name="preferences_dialog_title_heatmap_events">Heatmap events</string>
+
 </resources>

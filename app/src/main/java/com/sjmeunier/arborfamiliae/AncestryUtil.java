@@ -268,4 +268,86 @@ public class AncestryUtil {
     public static int getHighestAhnenNumberForGeneration(int generation) {
         return (int)Math.pow(2, generation + 1) - 1;
     }
+
+    public static String calculateRelationship(int generationsFirstPerson, int generationsSecondPerson, boolean isSecondPersonMale, boolean directDescent)
+    {
+        if (generationsFirstPerson == 0 && generationsSecondPerson == 0)
+            return "";
+
+        String relationship = "";
+
+        int difference = (int)Math.abs(generationsFirstPerson - generationsSecondPerson);
+        if (directDescent && difference == 0)
+            return "";
+
+        if (difference == 0 && generationsSecondPerson == 1 && !directDescent) //Siblings
+        {
+            if (isSecondPersonMale)
+                relationship = "brother";
+            else
+                relationship = "sister";
+        }
+        else if (generationsSecondPerson == 0 || generationsFirstPerson == 0 || directDescent)
+        {
+            //Mother or father
+            if (isSecondPersonMale)
+                relationship = "father";
+            else
+                relationship = "mother";
+
+            if (difference == 2)
+                relationship = "grand" + relationship.toLowerCase();
+            if (difference == 3)
+                relationship = "great-grand" + relationship.toLowerCase();
+            else if (difference > 3)
+                relationship = "great(" + Integer.toString(difference - 2) + ")-" + relationship.toLowerCase();
+        }
+        else if (generationsSecondPerson == 1)
+        { //Aunt or Uncle
+            if (isSecondPersonMale)
+                relationship = "uncle";
+            else
+                relationship = "aunt";
+
+            if (difference == 2)
+                relationship = "great-" + relationship.toLowerCase();
+            else if (difference > 2)
+                relationship = "great(" + Integer.toString(difference - 1) + ")-" + relationship.toLowerCase();
+
+        }
+        else if (generationsFirstPerson == 1)
+        { //Niece or nephew
+            if (isSecondPersonMale)
+                relationship = "nephew";
+            else
+                relationship = "niece";
+
+            if (difference == 2)
+                relationship = "great-" + relationship.toLowerCase();
+            else if (difference > 2)
+                relationship = "great(" + Integer.toString(difference - 1) + ")-" + relationship.toLowerCase();
+        }
+        else
+        { //Cousin
+            int minGenerations = (int)Math.min(generationsFirstPerson, generationsSecondPerson);
+
+            if (minGenerations % 10 == 2)
+                relationship = Integer.toString(minGenerations - 1) + "st cousin";
+            else if (minGenerations % 10 == 3)
+                relationship = Integer.toString(minGenerations - 1) + "nd cousin";
+            else if (minGenerations % 10 == 4)
+                relationship = Integer.toString(minGenerations - 1) + "rd cousin";
+            else
+                relationship = Integer.toString(minGenerations - 1) + "th cousin";
+
+            if (difference == 1)
+                relationship = relationship + " once removed";
+            else if (difference == 2)
+                relationship = relationship + " twice removed";
+            else if (difference > 2)
+                relationship = relationship + " " + Integer.toString(difference) + "x removed";
+        }
+
+        return relationship;
+    }
 }

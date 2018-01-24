@@ -53,7 +53,8 @@ public class RecentList {
         String result = "";
         for(int i = 0; i < items.size() - 1; i++)
             result += String.valueOf((int)items.get(i)) + ";";
-        result += String.valueOf((int)items.get(items.size() - 1));
+        if (items.size() > 0)
+            result += String.valueOf((int)items.get(items.size() - 1));
         return result;
     }
 

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity
     public HashMap<Integer, Individual> individualsInActiveTree;
     public HashMap<Integer, Family> familiesInActiveTree;
 
-    private int rootIndividualId;
+    public int rootIndividualId;
 
     private RecentList recentIndividuals = new RecentList(10);
     private GedcomRequestReceiver receiver;
@@ -188,6 +188,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_recent:
                 fragmentClass = RecentFragment.class;
+                break;
+            case R.id.nav_relationship:
+                fragmentClass = RelationshipFragment.class;
                 break;
             default:
                 fragmentClass = TreeListFragment.class;

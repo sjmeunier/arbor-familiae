@@ -295,6 +295,13 @@ public class IndividualBiographicalFragment extends Fragment {
                 text.setText(sources.get(i).text);
                 biographicalTable.addView(row);
             }
+
+            row = inflater.inflate(R.layout.tablerow_individual_twocolumn, null, false);
+            label = row.findViewById(R.id.tablerow_individual_twocolumn_col1);
+            label.setText(mainActivity.getResources().getText(R.string.label_gedcomid));
+            text = row.findViewById(R.id.tablerow_individual_twocolumn_col2);
+            text.setText(Integer.toString(mainActivity.activeIndividual.individualId));
+            biographicalTable.addView(row);
         } else {
             notFoundTextView.setVisibility(View.VISIBLE);
             biographicalTable.setVisibility(View.GONE);

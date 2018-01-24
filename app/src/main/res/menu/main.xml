@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_jump_to_root"
+        android:orderInCategory="100"
+        android:title="@string/action_jump_to_root"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_set_home_person"
+        android:orderInCategory="200"
+        android:title="@string/action_set_home_person"
+        app:showAsAction="never" />
+</menu>

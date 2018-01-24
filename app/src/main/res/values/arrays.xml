@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="preferences_generation_list">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="preferences_nameformat_description_list">
+        <item>Lastname, Firstname (Suffix)</item>
+        <item>Lastname, Firstname</item>
+        <item>Firstname Lastname (Suffix)</item>
+        <item>Firstname Lastname</item>
+        <item>LASTNAME, Firstname (Suffix)</item>
+        <item>LASTNAME, Firstname</item>
+        <item>Firstname LASTNAME (Suffix)</item>
+        <item>Firstname LASTNAME</item>
+    </string-array>
+    <string-array name="preferences_nameformat_description_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
+    <string-array name="preferences_heatmap_events_description_list">
+        <item>All Events</item>
+        <item>Births</item>
+        <item>Baptisms</item>
+        <item>Deaths</item>
+        <item>Burials</item>
+        <item>Marriages</item>
+    </string-array>
+    <string-array name="preferences_heatmap_events_description_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+</resources>

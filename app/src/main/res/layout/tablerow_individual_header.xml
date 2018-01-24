@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow android:id="@+id/tablerow_individual_header_row"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:id="@+id/tablerow_individual_header_text"
+        android:layout_span="2"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:textAllCaps="true"
+        android:textColor="@color/colorTableHeaderText"
+        android:background="@color/colorTableHeaderBackground"
+        android:text="">
+    </TextView>
+</TableRow>

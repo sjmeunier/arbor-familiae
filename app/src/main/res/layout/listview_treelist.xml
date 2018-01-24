@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/treelist_tree_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+           android:paddingHorizontal="@dimen/treelist_item_padding"
+            android:paddingTop="@dimen/treelist_item_padding"
+            android:textSize="14dp"
+            android:textColor="@color/colorText" />
+
+        <TextView
+            android:id="@+id/treelist_individual_count"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="12dp"
+            android:paddingHorizontal="@dimen/treelist_item_padding"
+            android:paddingBottom="@dimen/treelist_item_padding"
+            android:textColor="@color/colorText" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/treelist_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:maxWidth="@dimen/listbutton_width"
+        android:minWidth="@dimen/listbutton_width"
+        android:maxHeight="@dimen/listbutton_height"
+        android:minHeight="@dimen/listbutton_height"
+        android:src="@drawable/ic_button_delete" />
+</RelativeLayout>

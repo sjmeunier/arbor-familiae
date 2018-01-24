@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single" android:id="@+id/tree_group">
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@drawable/ic_menu_search"
+            android:title="@string/action_search" />
+        <item
+            android:id="@+id/nav_individual_details"
+            android:icon="@drawable/ic_menu_individual"
+            android:title="@string/action_individual_details" />
+        <item
+            android:id="@+id/nav_tree"
+            android:icon="@drawable/ic_menu_tree"
+            android:title="@string/action_tree" />
+        <item
+            android:id="@+id/nav_fanchart"
+            android:icon="@drawable/ic_menu_fanchart"
+            android:title="@string/action_fanchart" />
+        <item
+            android:id="@+id/nav_heatmap"
+            android:icon="@drawable/ic_menu_mapmode"
+            android:title="@string/action_heatmap" />
+    </group>
+
+    <group android:checkableBehavior="single" android:id="@+id/general_group">
+        <item
+            android:id="@+id/nav_treelist"
+            android:icon="@drawable/ic_menu_treelist"
+            android:checked="true"
+            android:title="@string/action_trees" />
+        <item
+            android:id="@+id/nav_recent"
+            android:title="@string/action_recent" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_menu_settings"
+            android:title="@string/action_settings" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_menu_about"
+            android:title="@string/action_about" />
+    </group>
+</menu>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+    android:title="@string/preferences_general">
+
+    <ListPreference
+        android:key="generations_preference"
+        android:title="@string/preferences_title_generations"
+        android:summary="@string/preferences_summary_generations"
+        android:entries="@array/preferences_generation_list"
+        android:entryValues="@array/preferences_generation_list"
+        android:defaultValue="4"
+        android:dialogTitle="@string/preferences_dialog_title_generations" />
+    <ListPreference
+        android:key="nameformat_preference"
+        android:title="@string/preferences_title_nameformat"
+        android:summary="@string/preferences_summary_nameformat"
+        android:entries="@array/preferences_nameformat_description_list"
+        android:entryValues="@array/preferences_nameformat_description_value"
+        android:defaultValue="0"
+        android:dialogTitle="@string/preferences_dialog_title_nameformat" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/preferences_heatmap">
+
+        <ListPreference
+            android:key="heatmap_events_preference"
+            android:title="@string/preferences_title_heatmap_events"
+            android:summary=""
+            android:entries="@array/preferences_heatmap_events_description_list"
+            android:entryValues="@array/preferences_heatmap_events_description_value"
+            android:defaultValue="0"
+            android:dialogTitle="@string/preferences_dialog_title_heatmap_events" />
+    </PreferenceCategory>
+</PreferenceScreen>

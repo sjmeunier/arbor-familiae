@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:background="@android:color/transparent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/recent_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@color/colorMainListDivider"
+        android:dividerHeight="1dp"
+        android:footerDividersEnabled="false"
+        android:paddingLeft="@dimen/treelist_padding_ends"
+        android:paddingRight="@dimen/treelist_padding_ends"
+        tools:context="com.sjmeunier.arborfamiliae.MainActivity">
+    </ListView>
+
+</RelativeLayout>

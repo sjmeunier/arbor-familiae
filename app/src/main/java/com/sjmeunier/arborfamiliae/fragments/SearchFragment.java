@@ -52,7 +52,7 @@ public class SearchFragment extends Fragment{
         resultListAdapter.setOnIndividualListViewClickListener(new OnIndividualListViewClickListener() {
             @Override
             public void OnIndividualListViewClick(int individualId) {
-                mainActivity.setActiveIndividual(individualId);
+                mainActivity.setActiveIndividual(individualId, true);
                 mainActivity.redirectToIndividual();
             }
         });

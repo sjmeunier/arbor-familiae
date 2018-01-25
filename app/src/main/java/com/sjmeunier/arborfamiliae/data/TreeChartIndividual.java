@@ -5,7 +5,6 @@ import android.arch.persistence.room.PrimaryKey;
 
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 
-@Entity
 public class TreeChartIndividual {
 
     public final int individualId;

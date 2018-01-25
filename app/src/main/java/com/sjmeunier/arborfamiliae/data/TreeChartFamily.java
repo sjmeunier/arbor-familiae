@@ -7,12 +7,12 @@ import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 public class TreeChartFamily {
     public TreeChartIndividual spouse;
     public List<TreeChartIndividual> children;
 
     public TreeChartFamily() {
+        spouse = null;
         children = new ArrayList<TreeChartIndividual>();
 
     }

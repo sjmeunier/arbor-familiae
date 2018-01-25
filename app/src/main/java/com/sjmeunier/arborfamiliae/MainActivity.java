@@ -2,11 +2,10 @@ package com.sjmeunier.arborfamiliae;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.BroadcastReceiver;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -27,7 +26,6 @@ import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.database.Place;
 import com.sjmeunier.arborfamiliae.database.Tree;
-import com.sjmeunier.arborfamiliae.gedcom.GedcomImportService;
 import com.sjmeunier.arborfamiliae.fragments.*;
 
 import java.util.HashMap;
@@ -49,7 +47,8 @@ public class MainActivity extends AppCompatActivity
     public int rootIndividualId;
 
     private RecentList recentIndividuals = new RecentList(10);
-    private GedcomRequestReceiver receiver;
+    private TextView activeIndividualName;
+    private TextView rootIndividualName;
 
     private NameFormat nameFormat;
 
@@ -61,11 +60,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         database = AppDatabase.getDatabase(getApplicationContext());
-
-        IntentFilter filter = new IntentFilter(GedcomRequestReceiver.PROCESS_RESPONSE);
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        receiver = new GedcomRequestReceiver();
-        registerReceiver(receiver, filter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -80,6 +74,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         this.menu = navigationView.getMenu();
+        activeIndividualName = findViewById(R.id.active_individual_name);
+        rootIndividualName = findViewById(R.id.root_individual_name);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
@@ -116,7 +112,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDestroy() {
-        this.unregisterReceiver(receiver);
         super.onDestroy();
     }
 
@@ -147,7 +142,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_jump_to_root) {
-            setActiveIndividual(rootIndividualId);
+            setActiveIndividual(rootIndividualId, true);
             redirectToIndividual();
             return true;
         } else if (id == R.id.action_set_home_person) {
@@ -231,13 +226,16 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
-    public void setActiveIndividual(int individualId) {
+    public void setActiveIndividual(int individualId, boolean updateView) {
         activeIndividual = database.individualDao().getIndividual(activeTree.id, individualId);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("activeIndividual_" + String.valueOf(activeTree.id), individualId);
         editor.commit();
+
+        if (updateView && activeIndividualName != null)
+            activeIndividualName.setText(AncestryUtil.generateName(activeIndividual, nameFormat));
 
         addRecentIndividual(individualId);
     }
@@ -261,6 +259,9 @@ public class MainActivity extends AppCompatActivity
 
         Toast.makeText(this, getResources().getText(R.string.message_root_person_set) + " " + AncestryUtil.generateName(activeIndividual, nameFormat), Toast.LENGTH_SHORT).show();
 
+        if (rootIndividualName != null)
+            rootIndividualName.setText(AncestryUtil.generateName(activeIndividual, nameFormat));
+
         rootIndividualId = activeIndividual.individualId;
     }
 
@@ -277,66 +278,8 @@ public class MainActivity extends AppCompatActivity
         rootIndividualId = 0;
     }
     public void setActiveTree(int treeId) {
-        activeTree = database.treeDao().getTree(treeId);
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-        if (activeTree != null) {
-            //Load cached data
-            List<Place> places = database.placeDao().getAllPlaces(treeId);
-            this.placesInActiveTree = new HashMap<Integer, Place>(places.size());
-            for(Place place : places) {
-                this.placesInActiveTree.put(place.placeId, place);
-            }
-            places = null;
-
-            List<Individual> individuals = database.individualDao().getAllIndividuals(treeId);
-            this.individualsInActiveTree = new HashMap<Integer, Individual>(individuals.size());
-            for(Individual individual : individuals) {
-                this.individualsInActiveTree.put(individual.individualId, individual);
-            }
-            individuals = null;
-
-            List<Family> families = database.familyDao().getAllFamilies(treeId);
-            this.familiesInActiveTree = new HashMap<Integer, Family>(families.size());
-            for(Family family : families) {
-                this.familiesInActiveTree.put(family.familyId, family);
-            }
-            families = null;
-
-            //Load recent list
-            String recentIds = settings.getString("recentIndividuals_" + String.valueOf(activeTree.id), "");
-            recentIndividuals.deserialize(recentIds);
-
-            //Set root individual
-            int id = settings.getInt("activeIndividual_" + String.valueOf(activeTree.id), 0);
-            if (id > 0) {
-                setActiveIndividual(id);
-            } else {
-                activeIndividual = database.individualDao().getIndividual(activeTree.id, activeTree.defaultIndividual);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putInt("activeIndividual_" + String.valueOf(activeTree.id), activeTree.defaultIndividual);
-                editor.commit();
-
-                addRecentIndividual(activeTree.defaultIndividual);
-            }
-
-            getRootIndividual();
-
-            //Update views
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            View headerView = navigationView.getHeaderView(0);
-            TextView navTreeText = headerView.findViewById(R.id.selected_tree_text);
-            if (navTreeText != null)
-                navTreeText.setText(activeTree.name);
-            Toast.makeText(this, getResources().getText(R.string.message_tree_selected) + " " + activeTree.name, Toast.LENGTH_SHORT).show();
-        } else {
-            activeIndividual = null;
-            recentIndividuals.clear();
-        }
-
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("activeTree", treeId);
-        editor.commit();
-
+        TreeLoader treeLoader = new TreeLoader(this);
+        treeLoader.execute(treeId);
     }
     public void deleteTreePreferences(int treeId) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -380,13 +323,104 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public class GedcomRequestReceiver extends BroadcastReceiver {
-        public static final String PROCESS_RESPONSE = "com.sjmeunier.arborfamiliae.intent.action.GEDCOM_PROCESS_RESPONSE";
+    private class TreeLoader extends AsyncTask<Integer, Integer, Boolean> {
+        private Context context;
+        private ProgressDialog progressDialog;
+
+        public TreeLoader (Context context){
+            this.context = context;
+        }
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra(GedcomImportService.PARAM_OUT_MSG);
-            Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
+        protected Boolean doInBackground(Integer... params) {
+            int treeId = params[0];
+            activeTree = database.treeDao().getTree(treeId);
+
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this.context);
+            if (activeTree != null) {
+                //Load cached data
+                List<Place> places = database.placeDao().getAllPlaces(treeId);
+                placesInActiveTree = new HashMap<Integer, Place>(places.size());
+                for(Place place : places) {
+                    placesInActiveTree.put(place.placeId, place);
+                }
+                places = null;
+
+                List<Individual> individuals = database.individualDao().getAllIndividuals(treeId);
+                individualsInActiveTree = new HashMap<Integer, Individual>(individuals.size());
+                for(Individual individual : individuals) {
+                    individualsInActiveTree.put(individual.individualId, individual);
+                }
+                individuals = null;
+
+                List<Family> families = database.familyDao().getAllFamilies(treeId);
+                familiesInActiveTree = new HashMap<Integer, Family>(families.size());
+                for(Family family : families) {
+                    familiesInActiveTree.put(family.familyId, family);
+                }
+                families = null;
+
+                //Load recent list
+                String recentIds = settings.getString("recentIndividuals_" + String.valueOf(activeTree.id), "");
+                recentIndividuals.deserialize(recentIds);
+
+                //Set root individual
+                int id = settings.getInt("activeIndividual_" + String.valueOf(activeTree.id), 0);
+                if (id > 0) {
+                    setActiveIndividual(id, false);
+                } else {
+                    activeIndividual = database.individualDao().getIndividual(activeTree.id, activeTree.defaultIndividual);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putInt("activeIndividual_" + String.valueOf(activeTree.id), activeTree.defaultIndividual);
+                    editor.commit();
+
+                    addRecentIndividual(activeTree.defaultIndividual);
+                }
+
+                getRootIndividual();
+
+            } else {
+                activeIndividual = null;
+                recentIndividuals.clear();
+            }
+
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putInt("activeTree", treeId);
+            editor.commit();
+            return true;
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (activeTree != null) {
+                //Update views
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                View headerView = navigationView.getHeaderView(0);
+                TextView navTreeText = headerView.findViewById(R.id.selected_tree_text);
+                if (navTreeText != null)
+                    navTreeText.setText(activeTree.name);
+                if (rootIndividualName != null)
+                    rootIndividualName.setText(AncestryUtil.generateName(individualsInActiveTree.get(rootIndividualId), nameFormat));
+                if (activeIndividualName != null)
+                    activeIndividualName.setText(AncestryUtil.generateName(activeIndividual, nameFormat));
+                Toast.makeText(context, context.getResources().getText(R.string.message_tree_selected) + " " + activeTree.name, Toast.LENGTH_SHORT).show();
+            }
+            progressDialog.dismiss();
+            this.context = null;
+        }
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(context, R.style.MyProgressDialog);
+            progressDialog.setTitle(context.getResources().getText(R.string.progress_tree));
+            progressDialog.setMessage(context.getResources().getText(R.string.progress_pleasewait));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
         }
     }
 }

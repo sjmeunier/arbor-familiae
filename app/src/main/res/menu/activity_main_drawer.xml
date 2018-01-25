@@ -19,12 +19,13 @@
             android:icon="@drawable/ic_menu_fanchart"
             android:title="@string/action_fanchart" />
         <item
+            android:id="@+id/nav_relationship"
+            android:icon="@drawable/ic_menu_relationship"
+            android:title="@string/action_relationship" />
+        <item
             android:id="@+id/nav_heatmap"
             android:icon="@drawable/ic_menu_mapmode"
             android:title="@string/action_heatmap" />
-        <item
-            android:id="@+id/nav_relationship"
-            android:title="@string/action_relationship" />
     </group>
 
     <group android:checkableBehavior="single" android:id="@+id/general_group">
@@ -35,6 +36,7 @@
             android:title="@string/action_trees" />
         <item
             android:id="@+id/nav_recent"
+            android:icon="@drawable/ic_menu_recent"
             android:title="@string/action_recent" />
         <item
             android:id="@+id/nav_settings"

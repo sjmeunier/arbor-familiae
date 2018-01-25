@@ -13,14 +13,20 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.sjmeunier.arborfamiliae.data.FamilyIndividuals;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
+import com.sjmeunier.arborfamiliae.data.TreeChartFamily;
 import com.sjmeunier.arborfamiliae.data.TreeChartIndividual;
+import com.sjmeunier.arborfamiliae.data.TreeChartIndividualType;
+import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import com.sjmeunier.arborfamiliae.database.Individual;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 
@@ -29,6 +35,7 @@ public class TreeChartCanvasView extends View {
     private boolean isLoaded = false;
     private Map<Integer, Individual> individuals;
     private Map<Integer, TreeChartIndividual> individualBoxes;
+    private List<TreeChartFamily> familyBoxes;
 
     Context context;
     private Paint linePaint;
@@ -111,15 +118,14 @@ public class TreeChartCanvasView extends View {
     }
 
 
-    public void configureChart(Map<Integer, Individual> individuals, int maxGenerations, NameFormat nameFormat)
+    public void configureChart(Map<Integer, Individual> individuals, List<FamilyIndividuals> familiesWithIndividuals, int maxGenerations, NameFormat nameFormat)
     {
         this.individuals = individuals;
         Individual individual;
 
+        //Create ancestor boxes
         int highestAhnenNumber = 0;
-        //for (Map.Entry<Integer, Individual> entry : individuals.entrySet()) {
-        //   highestAhnenNumber = Math.max(highestAhnenNumber, entry.getKey());
-        //}
+
         highestAhnenNumber = AncestryUtil.getHighestAhnenNumberForGeneration(maxGenerations);
         int highestGeneration = AncestryUtil.getGenerationNumberFromAhnenNumber(highestAhnenNumber);
         int maxBoxesPerGeneration = (int)Math.pow(2, highestGeneration);
@@ -153,11 +159,53 @@ public class TreeChartCanvasView extends View {
                         childAhnenNumber,
                         true));
             } else {
-
                 individualBoxes.put(ahnenNumber, new TreeChartIndividual(0, ahnenNumber, "", "", GenderEnum.Unknown, boxCentreX, boxCentreY, childAhnenNumber, false));
             }
         }
 
+        //Create immediate family boxes
+        familyBoxes = new ArrayList<>();
+
+        float boxSpouseCentreX = individualBoxes.get(1).boxCentreX;
+        float boxChildCentreX = individualBoxes.get(1).boxCentreX - (boxHalfWidth * 2f + boxHorizontalSpacing);
+        float boxCentreY = individualBoxes.get(1).boxCentreY + boxHalfHeight * 2f + boxMinVerticalSpacing;
+
+        for(FamilyIndividuals familyIndividuals : familiesWithIndividuals) {
+            TreeChartFamily treeChartFamily = new TreeChartFamily();
+
+            if (familyIndividuals.spouse == null) {
+                treeChartFamily.spouse = new TreeChartIndividual(0, 0, "", "", GenderEnum.Unknown, boxSpouseCentreX, boxCentreY, 0, false);
+            } else {
+                treeChartFamily.spouse = new TreeChartIndividual(
+                        familyIndividuals.spouse.individualId,
+                        0,
+                        AncestryUtil.generateName(familyIndividuals.spouse, nameFormat),
+                        AncestryUtil.generateBirthDeathDate(familyIndividuals.spouse, true),
+                        familyIndividuals.spouse.gender,
+                        boxSpouseCentreX,
+                        boxCentreY,
+                        0,
+                        true);
+            }
+
+            for(Individual child : familyIndividuals.children) {
+                if (child != null){
+                    treeChartFamily.children.add(new TreeChartIndividual(
+                            child.individualId,
+                            0,
+                            AncestryUtil.generateName(child, nameFormat),
+                            AncestryUtil.generateBirthDeathDate(child, true),
+                            child.gender,
+                            boxChildCentreX,
+                            boxCentreY,
+                            0,
+                            true));
+                    boxCentreY += (boxHalfHeight * 2f + boxMinVerticalSpacing);
+                }
+            }
+
+            familyBoxes.add(treeChartFamily);
+        }
 
         this.isLoaded = true;
         Log.d("ARBORFAMILIAE-LOG", "Set up canvas with " + String.valueOf(individuals.size()) + " individuals and " + String.valueOf(maxGenerations) + " generations");
@@ -175,7 +223,7 @@ public class TreeChartCanvasView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         TreeChartIndividual individualBox;
-        TreeChartIndividual individualChildBox;
+        TreeChartIndividual individualConnectingBox;
         if (isLoaded) {
             textPaint.setStrokeWidth(2f);
             textPaint.setTextSize(28f * scale);
@@ -186,30 +234,60 @@ public class TreeChartCanvasView extends View {
             originX = boxHalfWidth + boxHorizontalSpacing * scale;
             originY = getHeight() / 2f;
 
+            //Draw ancestors
             for (Map.Entry<Integer, TreeChartIndividual> entry : individualBoxes.entrySet()) {
                 individualBox = entry.getValue();
-                if (individualBox.recordExists) {
-                    if (individualBox.gender == GenderEnum.Male)
-                        canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), maleFillPaint);
-                    else
-                        canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), femaleFillPaint);
+                if (individualBox.childAhnenNumber > 0)
+                    individualConnectingBox = individualBoxes.get(individualBox.childAhnenNumber);
+                else
+                    individualConnectingBox = null;
+                drawBox(canvas, entry.getValue(), individualConnectingBox, TreeChartIndividualType.Ancestor);
+            }
 
-                    canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), linePaint);
-                } else {
-                    canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), linePaint);
+            //Draw families
+            individualConnectingBox = individualBoxes.get(1);
+            for(TreeChartFamily family : familyBoxes) {
+                drawBox(canvas, family.spouse, individualConnectingBox, TreeChartIndividualType.Spouse);
+
+                individualConnectingBox = family.spouse;
+                for(TreeChartIndividual child : family.children) {
+                    drawBox(canvas, child, individualConnectingBox, TreeChartIndividualType.Child);
                 }
-
-                if (individualBox.childAhnenNumber > 0) {
-                    individualChildBox = individualBoxes.get(individualBox.childAhnenNumber);
-                    canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), thickLinePaint);
-                    canvas.drawLine(originX + offsetX + ((individualChildBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualChildBox.boxCentreY) * scale), originX + offsetX + ((individualChildBox.boxCentreX + boxHalfWidth + (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualChildBox.boxCentreY) * scale), thickLinePaint);
-                    canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualChildBox.boxCentreX + boxHalfWidth + (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualChildBox.boxCentreY) * scale), thickLinePaint);
-                }
-                textPaint.setTextSize(28f * scale);
-                drawText(canvas, individualBox.name, individualBox.dates, (boxHalfWidth * 2f - boxPadding) * scale, originX + offsetX + (individualBox.boxCentreX * scale), originY + offsetY + (individualBox.boxCentreY * scale));
-
             }
         }
+    }
+
+    private void drawBox(Canvas canvas, TreeChartIndividual individualBox, TreeChartIndividual individualConnectingBox, TreeChartIndividualType individualType) {
+        //Draw individual box
+        if (individualBox.recordExists) {
+            if (individualBox.gender == GenderEnum.Male)
+                canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), maleFillPaint);
+            else
+                canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), femaleFillPaint);
+
+            canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), linePaint);
+        } else {
+            canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), linePaint);
+        }
+
+        if (individualType == TreeChartIndividualType.Ancestor && individualConnectingBox != null) {
+            //Connect lines for ancestors
+            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), thickLinePaint);
+            canvas.drawLine(originX + offsetX + ((individualConnectingBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualConnectingBox.boxCentreY) * scale), originX + offsetX + ((individualConnectingBox.boxCentreX + boxHalfWidth + (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualConnectingBox.boxCentreY) * scale), thickLinePaint);
+            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualConnectingBox.boxCentreX + boxHalfWidth + (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualConnectingBox.boxCentreY) * scale), thickLinePaint);
+        } else if (individualType == TreeChartIndividualType.Spouse && individualConnectingBox != null) {
+            //Connect lines for spouse
+            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualConnectingBox.boxCentreX) * scale), originY + offsetY + ((individualConnectingBox.boxCentreY + boxHalfHeight) * scale), thickLinePaint);
+        } else if (individualType == TreeChartIndividualType.Child && individualConnectingBox != null) {
+            //Connect lines for children
+            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), thickLinePaint);
+            canvas.drawLine(originX + offsetX + ((individualConnectingBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualConnectingBox.boxCentreY) * scale), originX + offsetX + ((individualConnectingBox.boxCentreX - boxHalfWidth - (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualConnectingBox.boxCentreY) * scale), thickLinePaint);
+            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualConnectingBox.boxCentreX - boxHalfWidth - (boxHorizontalSpacing / 2f)) * scale), originY + offsetY + ((individualConnectingBox.boxCentreY) * scale), thickLinePaint);
+        }
+
+        textPaint.setTextSize(28f * scale);
+        drawText(canvas, individualBox.name, individualBox.dates, (boxHalfWidth * 2f - boxPadding) * scale, originX + offsetX + (individualBox.boxCentreX * scale), originY + offsetY + (individualBox.boxCentreY * scale));
+
     }
 
     private void drawText(Canvas canvas, String name, String dates, float maxWidth, float centreX, float centreY) {

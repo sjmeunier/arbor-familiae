@@ -115,22 +115,26 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
 
         individuals = new HashMap<Integer, Individual>();
 
-        Individual root = mainActivity.activeIndividual;
-        individuals.put(1, root);
+        if (mainActivity.activeIndividual != null) {
+            Individual root = mainActivity.activeIndividual;
+            individuals.put(1, root);
 
-        addLocations(root);
-        processGeneration(1, 1, root.parentFamilyId);
+            addLocations(root);
+            processGeneration(1, 1, root.parentFamilyId);
+        }
         if (locations.size() > 0)
             rootLocation = locations.get(0);
         else
-            rootLocation = new LatLng(0,0);
+            rootLocation = new LatLng(0, 0);
+
     }
 
     private void processGeneration(int generation, int childAhnenNumber, int familyId) {
         Family family = mainActivity.familiesInActiveTree.get(familyId);
-        addFamilyLocations(family);
         if (family == null)
             return;
+
+        addFamilyLocations(family);
 
         Individual father = mainActivity.individualsInActiveTree.get(family.husbandId);
         if (father != null) {

@@ -51,7 +51,7 @@ public class RecentFragment extends Fragment{
         recentListAdapter.setOnIndividualListViewClickListener(new OnIndividualListViewClickListener() {
             @Override
             public void OnIndividualListViewClick(int individualId) {
-                mainActivity.setActiveIndividual(individualId);
+                mainActivity.setActiveIndividual(individualId, true);
                 mainActivity.redirectToIndividual();
             }
         });

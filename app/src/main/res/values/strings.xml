@@ -14,8 +14,11 @@
     <string name="about_heatmap_header">Heatmap</string>
     <string name="about_heatmap_description">The heatmap shows the locations on a map related to the active individual</string>
 
-    <string name="about_tree_header">Tree</string>
+    <string name="about_tree_header">Tree Chart</string>
     <string name="about_tree_description">The tree view shows the relationships of the active individual in a tree structure</string>
+
+    <string name="about_relationship_header">Relationship Chart</string>
+    <string name="about_relationship_description">The relationship chart calculates and displayes the relationship between the root and active individuals</string>
 
     <string name="about_search_header">Search</string>
     <string name="about_search_description">Searches current tree for the matching individual based on first name, surname or suffix</string>
@@ -42,6 +45,11 @@
     <string name="action_jump_to_root">Jump to root</string>
 
     <string name="search_hint">Search name...</string>
+
+    <string name="progress_import">Importing Gedcom</string>
+    <string name="progress_tree">Loading Tree</string>
+    <string name="progress_pleasewait">Please wait...</string>
+    <string name="progress_calculatingrelationship">Calculating relationship</string>
 
     <string name="treelist_individuals">%d individuals</string>
     <string name="treelist_families">%d families</string>
@@ -75,6 +83,9 @@
     <string name="label_father">Father</string>
     <string name="label_mother">Mother</string>
     <string name="label_gedcomid">Gedcom ID</string>
+
+    <string name="label_root">Root</string>
+    <string name="label_active">Active</string>
 
     <string name="preferences_general">General</string>
     <string name="preferences_title_generations">Generations in charts</string>

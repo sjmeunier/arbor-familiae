@@ -4,7 +4,6 @@ import android.arch.persistence.room.Entity;
 
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 
-@Entity
 public class RelationshipChartIndividual {
 
     public final int individualId;

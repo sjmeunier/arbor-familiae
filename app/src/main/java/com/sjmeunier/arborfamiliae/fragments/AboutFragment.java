@@ -46,6 +46,9 @@ public class AboutFragment extends Fragment{
         sb.append("<b>" + resources.getText(R.string.about_fanchart_header) + "</b><br/>");
         sb.append(resources.getText(R.string.about_fanchart_description) + "<br/>");
         sb.append("<br/>");
+        sb.append("<b>" + resources.getText(R.string.about_relationship_header) + "</b><br/>");
+        sb.append(resources.getText(R.string.about_relationship_description));
+        sb.append("<br/>");
         sb.append("<b>" + resources.getText(R.string.about_heatmap_header) + "</b><br/>");
         sb.append(resources.getText(R.string.about_heatmap_description));
 

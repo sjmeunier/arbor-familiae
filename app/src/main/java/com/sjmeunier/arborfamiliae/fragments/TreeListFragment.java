@@ -1,10 +1,14 @@
 package com.sjmeunier.arborfamiliae.fragments;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +20,11 @@ import com.sjmeunier.arborfamiliae.OnTreeListViewClickListener;
 import com.sjmeunier.arborfamiliae.OnTreeListViewDeleteListener;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.TreeListAdapter;
+import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Tree;
-import com.sjmeunier.arborfamiliae.gedcom.GedcomImportService;
+import com.sjmeunier.arborfamiliae.gedcom.GedcomParser;
 
+import java.io.IOException;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -53,12 +59,8 @@ public class TreeListFragment extends Fragment{
             case GEDCOM_FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK) {
                     final Uri uri = data.getData();
-                    Toast.makeText(mainActivity, mainActivity.getResources().getText(R.string.message_parsing_gedcom), Toast.LENGTH_LONG).show();
-
-                    Intent importServiceIntent = new Intent(mainActivity, GedcomImportService.class);
-                    importServiceIntent.putExtra(GedcomImportService.PARAM_IN_MSG, uri.toString());
-                    mainActivity.startService(importServiceIntent);
-
+                    GedcomLoader gedcomLoader = new GedcomLoader(mainActivity);
+                    gedcomLoader.execute(uri);
                 }
                 break;
         }
@@ -105,7 +107,6 @@ public class TreeListFragment extends Fragment{
             @Override
             public void OnTreeListViewClick(int treeId) {
                 mainActivity.setActiveTree(treeId);
-                mainActivity.redirectToIndividual();
             }
         });
 
@@ -121,4 +122,54 @@ public class TreeListFragment extends Fragment{
         return view;
     }
 
+    private class GedcomLoader extends AsyncTask<Uri, Integer, String> {
+        private Context context;
+        private ProgressDialog progressDialog;
+
+        public GedcomLoader (Context context){
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Uri... params) {
+            Uri gedcomResource = params[0];
+
+            AppDatabase database = AppDatabase.getDatabase(context.getApplicationContext());
+            String message = "";
+            int treeId = 0;
+            try {
+                GedcomParser parser = new GedcomParser(database, context.getContentResolver());
+                treeId = parser.parseGedcom(context, gedcomResource);
+                message = "Finished importing tree";
+                Log.d("ARBORFAMILIAE-LOG", "Finished tree");
+            } catch (IOException ex) {
+                message = "Unable to import tree";
+                Log.d("ARBORFAMILIAE-LOG", ex.getMessage());
+            }
+
+            return message;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            progressDialog.dismiss();
+            Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+            reloadTreeList();
+            this.context = null;
+        }
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(context, R.style.MyProgressDialog);
+            progressDialog.setTitle(context.getResources().getText(R.string.progress_import));
+            progressDialog.setMessage(context.getResources().getText(R.string.progress_pleasewait));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+        }
+    }
 }

@@ -1,7 +1,10 @@
 package com.sjmeunier.arborfamiliae.fragments;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -19,10 +22,9 @@ import com.sjmeunier.arborfamiliae.RelationshipCanvasView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 public class RelationshipFragment extends Fragment{
 
@@ -56,45 +58,14 @@ public class RelationshipFragment extends Fragment{
         mainActivity = (MainActivity)getActivity();
 
         relationshipCanvas = (RelationshipCanvasView) view.findViewById(R.id.relationship_canvas);
-        drawChart();
+
+        RelationshipChartLoader relationshipChartLoader = new RelationshipChartLoader(mainActivity);
+        relationshipChartLoader.execute();
+
         return view;
     }
 
-    private void drawChart() {
-        if (mainActivity.activeIndividual == null || mainActivity.activeTree == null)
-            return;
-
-        database = AppDatabase.getDatabase(mainActivity);
-        treeId = mainActivity.activeTree.id;
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-        nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
-
-        rootTree = new HashMap<>();
-        targetTree = new HashMap<>();
-        rootIndividualIds = new ArrayList<>();
-        targetIndividualIds = new ArrayList<>();
-        rootLineage = new ArrayList<>();
-        targetLineage = new ArrayList<>();
-        ancestorSpouse = null;
-
-        if (mainActivity.rootIndividualId != 0 && mainActivity.activeIndividual != null) {
-            rootTree.put((long)1, mainActivity.individualsInActiveTree.get(mainActivity.rootIndividualId));
-            rootIndividualIds.add(mainActivity.rootIndividualId);
-            targetTree.put((long)1, mainActivity.activeIndividual);
-            targetIndividualIds.add(mainActivity.activeIndividual.individualId);
-            rootLineage.add(mainActivity.individualsInActiveTree.get(mainActivity.rootIndividualId));
-            targetLineage.add(mainActivity.activeIndividual);
-
-            if (mainActivity.rootIndividualId != mainActivity.activeIndividual.individualId) {
-                processNextGeneration(1, true, true);
-            }
-        }
-
-        relationshipCanvas.configureChart(rootLineage, targetLineage, ancestorSpouse, nameFormat);
-    }
-
-    private void processNextGeneration(int generation, boolean keepProcessingRoot, boolean keepProcessingTarget) {
+    private void processNextGeneration(int generation, boolean keepProcessingRoot, boolean keepProcessingTarget, List<Long> previouslyAddedKeysRoot, List<Long> previouslyAddedKeysTarget) {
         Family family;
         Individual father;
         Individual mother;
@@ -104,39 +75,42 @@ public class RelationshipFragment extends Fragment{
 
         int matchId = 0;
 
+        List<Long> currentlyAddedKeysRoot = new ArrayList<>();
+        List<Long> currentlyAddedKeysTarget = new ArrayList<>();
+
         //Add next generation for root tree
         if (keepProcessingRoot) {
-            for (long i = (long)Math.pow(2, (generation - 1)); i < (long)Math.pow(2, (generation)); i++) {
-                if (rootTree.containsKey(i)) {
-                    family = mainActivity.familiesInActiveTree.get(rootTree.get(i).parentFamilyId);
-                    if (family != null) {
-                        if (!rootIndividualIds.contains(family.husbandId)) {
-                            father = mainActivity.individualsInActiveTree.get(family.husbandId);
-                            if (father != null) {
-                                rootTree.put(i * 2, mainActivity.individualsInActiveTree.get(family.husbandId));
-                                rootIndividualIds.add(family.husbandId);
+            for (long key : previouslyAddedKeysRoot) {
+                family = mainActivity.familiesInActiveTree.get(rootTree.get(key).parentFamilyId);
+                if (family != null) {
+                    if (!rootIndividualIds.contains(family.husbandId)) {
+                        father = mainActivity.individualsInActiveTree.get(family.husbandId);
+                        if (father != null) {
+                            rootTree.put(key * 2, mainActivity.individualsInActiveTree.get(family.husbandId));
+                            currentlyAddedKeysRoot.add(key * 2);
+                            rootIndividualIds.add(family.husbandId);
 
-                                if (!matchFound && targetIndividualIds.contains(family.husbandId)){
-                                    matchFound = true;
-                                    matchId = family.husbandId;
-                                }
-                                rootHasMoreAncestors = true;
+                            if (!matchFound && targetIndividualIds.contains(family.husbandId)) {
+                                matchFound = true;
+                                matchId = family.husbandId;
                             }
+                            rootHasMoreAncestors = true;
                         }
+                    }
 
-                        if (!rootIndividualIds.contains(family.wifeId)) {
-                            mother = mainActivity.individualsInActiveTree.get(family.wifeId);
-                            if (mother != null) {
-                                rootTree.put(i * 2 + 1, mainActivity.individualsInActiveTree.get(family.wifeId));
-                                rootIndividualIds.add(family.wifeId);
+                    if (!rootIndividualIds.contains(family.wifeId)) {
+                        mother = mainActivity.individualsInActiveTree.get(family.wifeId);
+                        if (mother != null) {
+                            rootTree.put(key * 2 + 1, mainActivity.individualsInActiveTree.get(family.wifeId));
+                            currentlyAddedKeysRoot.add(key * 2 + 1);
+                            rootIndividualIds.add(family.wifeId);
 
-                                if (!matchFound && targetIndividualIds.contains(family.wifeId)){
-                                    matchFound = true;
-                                    matchId = family.wifeId;
-                                }
-
-                                rootHasMoreAncestors = true;
+                            if (!matchFound && targetIndividualIds.contains(family.wifeId)) {
+                                matchFound = true;
+                                matchId = family.wifeId;
                             }
+
+                            rootHasMoreAncestors = true;
                         }
                     }
                 }
@@ -145,37 +119,37 @@ public class RelationshipFragment extends Fragment{
 
         //Add next generation for target tree
         if (keepProcessingTarget) {
-            for (long i = (long)Math.pow(2, (generation - 1)); i < (long)Math.pow(2, (generation)); i++) {
-                if (targetTree.containsKey(i)) {
-                    family = mainActivity.familiesInActiveTree.get(targetTree.get(i).parentFamilyId);
-                    if (family != null) {
-                        if (!targetIndividualIds.contains(family.husbandId)) {
-                            father = mainActivity.individualsInActiveTree.get(family.husbandId);
-                            if (father != null) {
-                                targetTree.put(i * 2, mainActivity.individualsInActiveTree.get(family.husbandId));
-                                targetIndividualIds.add(family.husbandId);
+            for (long key : previouslyAddedKeysTarget) {
+                family = mainActivity.familiesInActiveTree.get(targetTree.get(key).parentFamilyId);
+                if (family != null) {
+                    if (!targetIndividualIds.contains(family.husbandId)) {
+                        father = mainActivity.individualsInActiveTree.get(family.husbandId);
+                        if (father != null) {
+                            targetTree.put(key * 2, mainActivity.individualsInActiveTree.get(family.husbandId));
+                            currentlyAddedKeysTarget.add(key * 2);
+                            targetIndividualIds.add(family.husbandId);
 
-                                if (!matchFound && rootIndividualIds.contains(family.husbandId)){
-                                    matchFound = true;
-                                    matchId = family.husbandId;
-                                }
-
-                                targetHasMoreAncestors = true;
+                            if (!matchFound && rootIndividualIds.contains(family.husbandId)){
+                                matchFound = true;
+                                matchId = family.husbandId;
                             }
+
+                            targetHasMoreAncestors = true;
                         }
+                    }
 
-                        if (!targetIndividualIds.contains(family.wifeId)) {
-                            mother = mainActivity.individualsInActiveTree.get(family.wifeId);
-                            if (mother != null) {
-                                targetTree.put(i * 2 + 1, mainActivity.individualsInActiveTree.get(family.wifeId));
-                                targetIndividualIds.add(family.wifeId);
+                    if (!targetIndividualIds.contains(family.wifeId)) {
+                        mother = mainActivity.individualsInActiveTree.get(family.wifeId);
+                        if (mother != null) {
+                            targetTree.put(key * 2 + 1, mainActivity.individualsInActiveTree.get(family.wifeId));
+                            currentlyAddedKeysTarget.add(key * 2 + 1);
+                            targetIndividualIds.add(family.wifeId);
 
-                                if (!matchFound && rootIndividualIds.contains(family.wifeId)){
-                                    matchFound = true;
-                                    matchId = family.wifeId;
-                                }
-                                targetHasMoreAncestors = true;
+                            if (!matchFound && rootIndividualIds.contains(family.wifeId)){
+                                matchFound = true;
+                                matchId = family.wifeId;
                             }
+                            targetHasMoreAncestors = true;
                         }
                     }
                 }
@@ -244,7 +218,79 @@ public class RelationshipFragment extends Fragment{
         }
 
         if ((targetHasMoreAncestors || rootHasMoreAncestors) && !matchFound)
-            processNextGeneration(generation + 1, rootHasMoreAncestors, targetHasMoreAncestors);
+            processNextGeneration(generation + 1, rootHasMoreAncestors, targetHasMoreAncestors, currentlyAddedKeysRoot, currentlyAddedKeysTarget);
     }
 
+    private class RelationshipChartLoader extends AsyncTask<Void, Integer, Boolean> {
+        private Context context;
+        private ProgressDialog progressDialog;
+
+        public RelationshipChartLoader (Context context){
+            this.context = context;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            if (mainActivity.activeIndividual == null || mainActivity.activeTree == null)
+                return false;
+
+            database = AppDatabase.getDatabase(mainActivity);
+            treeId = mainActivity.activeTree.id;
+
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+            nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
+
+            rootTree = new HashMap<>();
+            targetTree = new HashMap<>();
+            rootIndividualIds = new ArrayList<>();
+            targetIndividualIds = new ArrayList<>();
+            rootLineage = new ArrayList<>();
+            targetLineage = new ArrayList<>();
+            ancestorSpouse = null;
+
+
+            if (mainActivity.rootIndividualId != 0 && mainActivity.activeIndividual != null) {
+                rootTree.put((long)1, mainActivity.individualsInActiveTree.get(mainActivity.rootIndividualId));
+                rootIndividualIds.add(mainActivity.rootIndividualId);
+                targetTree.put((long)1, mainActivity.activeIndividual);
+                targetIndividualIds.add(mainActivity.activeIndividual.individualId);
+                rootLineage.add(mainActivity.individualsInActiveTree.get(mainActivity.rootIndividualId));
+                targetLineage.add(mainActivity.activeIndividual);
+
+                List<Long> currentRootKeys = new ArrayList<>();
+                List<Long> currentTargetKeys = new ArrayList<>();
+                currentRootKeys.add((long)1);
+                currentTargetKeys.add((long)1);
+
+                if (mainActivity.rootIndividualId != mainActivity.activeIndividual.individualId) {
+                    processNextGeneration(1, true, true, currentRootKeys, currentTargetKeys);
+                }
+            }
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+            progressDialog.dismiss();
+
+            relationshipCanvas.configureChart(rootLineage, targetLineage, ancestorSpouse, nameFormat);
+            this.context = null;
+        }
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(context, R.style.MyProgressDialog);
+            progressDialog.setTitle(context.getResources().getText(R.string.progress_calculatingrelationship));
+            progressDialog.setMessage(context.getResources().getText(R.string.progress_pleasewait));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+        }
+    }
 }

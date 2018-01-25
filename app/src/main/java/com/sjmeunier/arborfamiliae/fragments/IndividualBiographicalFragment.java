@@ -309,7 +309,7 @@ public class IndividualBiographicalFragment extends Fragment {
     }
 
     private void setActiveIndividual(int individualId) {
-        mainActivity.setActiveIndividual(individualId);
+        mainActivity.setActiveIndividual(individualId, true);
 
         updateBiographicalData();
     }

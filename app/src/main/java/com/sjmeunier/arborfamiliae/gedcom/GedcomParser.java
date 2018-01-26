@@ -92,7 +92,7 @@ public class GedcomParser {
         return Integer.parseInt(value.replaceAll("[\\D]", ""));
     }
 
-    public int parseGedcom(Context context, Uri uri) throws IOException{
+    public int parseGedcom(Context context, Uri uri) throws IOException, NumberFormatException {
         FileDetail fileDetail = FileUtils.getFileDetailFromUri(context, uri);
 
         Log.d("ARBORFAMILIAE", "uri :-" + uri.getPath());
@@ -207,7 +207,7 @@ public class GedcomParser {
         return treeId;
     }
 
-    public void ProcessRootLevel(String[] lineArray)
+    public void ProcessRootLevel(String[] lineArray) throws NumberFormatException
     {
         if (currentPlace != null) {
             places.put(currentPlace.placeName, currentPlace);
@@ -300,7 +300,7 @@ public class GedcomParser {
             }
         }
     }
-    public void ProcessLevel1(String[] lineArray)
+    public void ProcessLevel1(String[] lineArray) throws NumberFormatException
     {
         if (currentRecord == GedcomRecordEnum.Header)
         {
@@ -472,7 +472,7 @@ public class GedcomParser {
         }
     }
 
-    public void ProcessLevel2(String[] lineArray)
+    public void ProcessLevel2(String[] lineArray) throws NumberFormatException
     {
         if (currentSubRecord == GedcomSubRecordEnum.HeaderSource)
         {
@@ -656,7 +656,7 @@ public class GedcomParser {
         }
     }
 
-    public void ProcessLevel3(String[] lineArray)
+    public void ProcessLevel3(String[] lineArray) throws NumberFormatException
     {
         if (currentSubRecord == GedcomSubRecordEnum.IndividualBirth)
         {
@@ -705,7 +705,7 @@ public class GedcomParser {
         }
     }
 
-    public void ProcessLevel4(String[] lineArray)
+    public void ProcessLevel4(String[] lineArray) throws NumberFormatException
     {
         if (currentSubSubRecord == GedcomSubSubRecordEnum.IndividualBirthMap)
         {

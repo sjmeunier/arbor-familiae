@@ -287,13 +287,28 @@ public class AncestryUtil {
             else
                 relationship = "sister";
         }
-        else if (generationsSecondPerson == 0 || generationsFirstPerson == 0 || directDescent)
+        else if (generationsSecondPerson == 0 || directDescent)
         {
             //Mother or father
             if (isSecondPersonMale)
                 relationship = "father";
             else
                 relationship = "mother";
+
+            if (difference == 2)
+                relationship = "grand" + relationship.toLowerCase();
+            if (difference == 3)
+                relationship = "great-grand" + relationship.toLowerCase();
+            else if (difference > 3)
+                relationship = "great(" + Integer.toString(difference - 2) + ")-" + relationship.toLowerCase();
+        }
+        else if (generationsFirstPerson == 0 || directDescent)
+        {
+            //Mother or father
+            if (isSecondPersonMale)
+                relationship = "son";
+            else
+                relationship = "daughter";
 
             if (difference == 2)
                 relationship = "grand" + relationship.toLowerCase();

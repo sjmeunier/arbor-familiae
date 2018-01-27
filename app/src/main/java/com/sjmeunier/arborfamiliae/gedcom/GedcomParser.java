@@ -506,12 +506,10 @@ public class GedcomParser {
             switch (lineArray[1])
             {
                 case "GIVN":
-                    if (TextUtils.isEmpty(currentGedcomIndividual.givenName) && TextUtils.isEmpty(currentGedcomIndividual.surname))
-                        currentGedcomIndividual.givenName = lineArray[2];
+                    currentGedcomIndividual.givenName = lineArray[2];
                     break;
                 case "SURN":
-                    if (TextUtils.isEmpty(currentGedcomIndividual.surname))
-                        currentGedcomIndividual.surname = lineArray[2];
+                    currentGedcomIndividual.surname = lineArray[2];
                     break;
                 case "NSFX":
                     currentGedcomIndividual.suffix = lineArray[2];

@@ -115,22 +115,34 @@ public class AncestryUtil {
 
         String name = "";
         if (nameFormat == NameFormat.SurnameFirstnameSuffix || nameFormat == NameFormat.SurnameFirstname) {
-            name = individual.prefix + " " + individual.surname;
+			if (!individual.surname.startsWith(individual.prefix)
+				name = individual.prefix + " ";
+            name += individual.surname;
             if (!TextUtils.isEmpty(individual.givenName))
                 name += ", " + individual.givenName;
         } else if (nameFormat == NameFormat.SURNAMEFirstnameSuffix || nameFormat == NameFormat.SURNAMEFirstname) {
-            name = individual.prefix + " " + individual.surname.toUpperCase();
+			if (!individual.surname.startsWith(individual.prefix)
+				name = individual.prefix + " ";
+            name += individual.surname.toUpperCase();
             if (!TextUtils.isEmpty(individual.givenName))
                 name += ", " + individual.givenName;
 
         } else if (nameFormat == NameFormat.FirstnameSurnameSuffix || nameFormat == NameFormat.FirstnameSurname) {
             name = individual.givenName;
-            if (!TextUtils.isEmpty(individual.surname))
-                name += " " + individual.prefix + " " + individual.surname;
+            if (!TextUtils.isEmpty(individual.surname)) {
+				if (!individual.surname.startsWith(individual.prefix)
+					name += " " + individual.prefix;
+
+                name += " " + individual.surname;
+			}
         } else  {
             name = individual.givenName;
-            if (!TextUtils.isEmpty(individual.surname))
-                name += " " + individual.prefix + " " +  individual.surname.toUpperCase();
+            if (!TextUtils.isEmpty(individual.surname)) {
+				if (!individual.surname.startsWith(individual.prefix)
+					name += " " + individual.prefix;
+
+                name += " " + individual.surname.toUpperCase();
+			}
         }
         if (nameFormat == NameFormat.FirstnameSurnameSuffix || nameFormat == NameFormat.SurnameFirstnameSuffix || nameFormat == NameFormat.FirstnameSURNAMESuffix || nameFormat == NameFormat.SURNAMEFirstnameSuffix) {
             if (!TextUtils.isEmpty(individual.suffix))

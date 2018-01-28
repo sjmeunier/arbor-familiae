@@ -92,7 +92,7 @@ public class GedcomParser {
         return Integer.parseInt(value.replaceAll("[\\D]", ""));
     }
 
-    public int parseGedcom(Context context, Uri uri) throws IOException, NumberFormatException, ArrayIndexOutOfBoundsException {
+    public int parseGedcom(Context context, Uri uri) throws IOException, NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException {
         FileDetail fileDetail = FileUtils.getFileDetailFromUri(context, uri);
 
         Log.d("ARBORFAMILIAE", "uri :-" + uri.getPath());
@@ -207,7 +207,7 @@ public class GedcomParser {
         return treeId;
     }
 
-    public void ProcessRootLevel(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException
+    public void ProcessRootLevel(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException
     {
         if (currentPlace != null) {
             places.put(currentPlace.placeName, currentPlace);
@@ -300,7 +300,7 @@ public class GedcomParser {
             }
         }
     }
-    public void ProcessLevel1(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException
+    public void ProcessLevel1(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException
     {
         if (currentRecord == GedcomRecordEnum.Header)
         {
@@ -472,7 +472,7 @@ public class GedcomParser {
         }
     }
 
-    public void ProcessLevel2(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException
+    public void ProcessLevel2(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException
     {
         if (currentSubRecord == GedcomSubRecordEnum.HeaderSource)
         {
@@ -654,7 +654,7 @@ public class GedcomParser {
         }
     }
 
-    public void ProcessLevel3(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException
+    public void ProcessLevel3(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException
     {
         if (currentSubRecord == GedcomSubRecordEnum.IndividualBirth)
         {

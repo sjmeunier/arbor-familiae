@@ -227,10 +227,19 @@ public class MainActivity extends AppCompatActivity
 
     }
     public void setActiveIndividual(int individualId, boolean updateView) {
+        if (activeTree == null) {
+            activeIndividual = null;
+            return;
+        }
         activeIndividual = database.individualDao().getIndividual(activeTree.id, individualId);
+
+        if (activeIndividual == null) {
+            return;
+        }
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
+
         editor.putInt("activeIndividual_" + String.valueOf(activeTree.id), individualId);
         editor.commit();
 
@@ -380,6 +389,7 @@ public class MainActivity extends AppCompatActivity
                 getRootIndividual();
 
             } else {
+                deleteTreePreferences(treeId);
                 activeIndividual = null;
                 recentIndividuals.clear();
             }

@@ -9,7 +9,7 @@
     <string name="about_individualview_description">This view shows the biographical information for the currently active individual, including information on parents, spouses and children. You can navigate through the family by clicking on the names of the family members in this view</string>
 
     <string name="about_fanchart_header">Fanchart</string>
-    <string name="about_fanchart_description">The fanchart shows the ancestors of the active individual in a fan chart</string>
+    <string name="about_fanchart_description">The fanchart shows the ancestors or descendants of the active individual in a fan chart. Clicking on the centre of the chart switches between ancestor/descendant view.</string>
 
     <string name="about_heatmap_header">Heatmap</string>
     <string name="about_heatmap_description">The heatmap shows the locations on a map related to the active individual</string>

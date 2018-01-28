@@ -115,13 +115,13 @@ public class AncestryUtil {
 
         String name = "";
         if (nameFormat == NameFormat.SurnameFirstnameSuffix || nameFormat == NameFormat.SurnameFirstname) {
-			if (!individual.surname.startsWith(individual.prefix + " ")
+			if (!individual.surname.startsWith(individual.prefix + " "))
 				name = individual.prefix + " ";
             name += individual.surname;
             if (!TextUtils.isEmpty(individual.givenName))
                 name += ", " + individual.givenName;
         } else if (nameFormat == NameFormat.SURNAMEFirstnameSuffix || nameFormat == NameFormat.SURNAMEFirstname) {
-			if (!individual.surname.startsWith(individual.prefix + " ")
+			if (!individual.surname.startsWith(individual.prefix + " "))
 				name = individual.prefix + " ";
             name += individual.surname.toUpperCase();
             if (!TextUtils.isEmpty(individual.givenName))
@@ -130,7 +130,7 @@ public class AncestryUtil {
         } else if (nameFormat == NameFormat.FirstnameSurnameSuffix || nameFormat == NameFormat.FirstnameSurname) {
             name = individual.givenName;
             if (!TextUtils.isEmpty(individual.surname)) {
-				if (!individual.surname.startsWith(individual.prefix + " ")
+				if (!individual.surname.startsWith(individual.prefix + " "))
 					name += " " + individual.prefix;
 
                 name += " " + individual.surname;
@@ -138,7 +138,7 @@ public class AncestryUtil {
         } else  {
             name = individual.givenName;
             if (!TextUtils.isEmpty(individual.surname)) {
-				if (!individual.surname.startsWith(individual.prefix + " ")
+				if (!individual.surname.startsWith(individual.prefix + " "))
 					name += " " + individual.prefix;
 
                 name += " " + individual.surname.toUpperCase();

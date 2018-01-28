@@ -51,40 +51,11 @@ public class FanchartFragment extends Fragment{
         if (mainActivity.activeIndividual == null || mainActivity.activeTree == null)
             return;
 
-        database = AppDatabase.getDatabase(mainActivity);
-        treeId = mainActivity.activeTree.id;
-
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         maxGeneration = Integer.parseInt(settings.getString("generations_preference", "4"));
         nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 
-        individuals = new HashMap<Integer, Individual>();
-
-        individuals.put(1, mainActivity.individualsInActiveTree.get(mainActivity.activeIndividual.individualId));
-
-        processGeneration(1, 1, mainActivity.activeIndividual.parentFamilyId);
-
-        fanchartCanvas.configureChart(individuals, maxGeneration, nameFormat);
+        fanchartCanvas.configureChart(mainActivity.activeIndividual, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, maxGeneration, nameFormat);
     }
 
-    private void processGeneration(int generation, int childAhnenNumber, int familyId) {
-        Family family = mainActivity.familiesInActiveTree.get(familyId);
-        if (family == null)
-            return;
-
-        Individual father = mainActivity.individualsInActiveTree.get(family.husbandId);
-        if (father != null) {
-            individuals.put(childAhnenNumber * 2, father);
-            if (generation < maxGeneration && father.parentFamilyId != 0) {
-                processGeneration(generation + 1, childAhnenNumber * 2, father.parentFamilyId);
-            }
-        }
-        Individual mother = mainActivity.individualsInActiveTree.get(family.wifeId);
-        if (mother != null) {
-            individuals.put((childAhnenNumber * 2) + 1, mother);
-            if (generation < maxGeneration && mother.parentFamilyId != 0) {
-                processGeneration(generation + 1, (childAhnenNumber * 2) + 1, mother.parentFamilyId);
-            }
-        }
-    }
 }

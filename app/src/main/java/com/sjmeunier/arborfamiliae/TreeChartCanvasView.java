@@ -18,7 +18,9 @@ import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.data.TreeChartFamily;
 import com.sjmeunier.arborfamiliae.data.TreeChartIndividual;
 import com.sjmeunier.arborfamiliae.data.TreeChartIndividualType;
+import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
+import com.sjmeunier.arborfamiliae.database.FamilyChild;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import com.sjmeunier.arborfamiliae.database.Individual;
 
@@ -36,6 +38,18 @@ public class TreeChartCanvasView extends View {
     private Map<Integer, Individual> individuals;
     private Map<Integer, TreeChartIndividual> individualBoxes;
     private List<TreeChartFamily> familyBoxes;
+
+    private MainActivity mainActivity;
+    private boolean isConfigured = false;
+    private Map<Integer, Individual> allIndividualsInTree;
+    private Map<Integer, Family> allFamiliesInTree;
+    private Individual rootIndividual;
+    private int generations;
+    private NameFormat nameFormat;
+
+    private int treeId = 0;
+
+    private AppDatabase database;
 
     Context context;
     private Paint linePaint;
@@ -118,98 +132,22 @@ public class TreeChartCanvasView extends View {
     }
 
 
-    public void configureChart(Map<Integer, Individual> individuals, List<FamilyIndividuals> familiesWithIndividuals, int maxGenerations, NameFormat nameFormat)
+    public void configureChart(Individual rootIndividual, Map<Integer, Individual> allIndividualsInTree, Map<Integer, Family> allFamiliesInTree, AppDatabase database, int treeId, MainActivity mainActivity, int generations, NameFormat nameFormat)
     {
-        this.individuals = individuals;
-        Individual individual;
+        this.isConfigured = false;
+        this.isLoaded = false;
+        this.allIndividualsInTree = allIndividualsInTree;
+        this.allFamiliesInTree = allFamiliesInTree;
+        this.treeId = treeId;
+        this.database = database;
+        this.mainActivity = mainActivity;
+        this.generations = generations;
+        this.nameFormat = nameFormat;
+        this.rootIndividual = rootIndividual;
 
-        //Create ancestor boxes
-        int highestAhnenNumber = 0;
+        processData();
+        this.isConfigured = true;
 
-        highestAhnenNumber = AncestryUtil.getHighestAhnenNumberForGeneration(maxGenerations);
-        int highestGeneration = AncestryUtil.getGenerationNumberFromAhnenNumber(highestAhnenNumber);
-        int maxBoxesPerGeneration = (int)Math.pow(2, highestGeneration);
-
-        float maxReachY = (maxBoxesPerGeneration / 2f) * (boxHalfHeight * 2f + boxMinVerticalSpacing);
-
-        individualBoxes = new HashMap<Integer, TreeChartIndividual>();
-        for(int ahnenNumber = 1; ahnenNumber <= highestAhnenNumber; ahnenNumber++) {
-            int generation = AncestryUtil.getGenerationNumberFromAhnenNumber(ahnenNumber);
-            int boxIndex = ahnenNumber - (int)Math.pow(2, generation);
-            int boxesForThisGeneration = (int)Math.pow(2, generation);
-
-            float boxCentreX = generation * (boxHalfWidth * 2f + boxHorizontalSpacing);
-
-            float boxTotalVerticalHeight = (maxReachY * 2f) / boxesForThisGeneration;
-
-            float boxCentreY = ((boxTotalVerticalHeight / 2f) + (boxIndex * boxTotalVerticalHeight)) - maxReachY;
-
-            int childAhnenNumber = AncestryUtil.getChildAhnenNumber(ahnenNumber);
-
-            if (individuals.containsKey(ahnenNumber)) {
-                individual = individuals.get(ahnenNumber);
-                individualBoxes.put(ahnenNumber, new TreeChartIndividual(
-                        individual.individualId,
-                        ahnenNumber,
-                        AncestryUtil.generateName(individual, nameFormat),
-                        AncestryUtil.generateBirthDeathDate(individual, true),
-                        individual.gender,
-                        boxCentreX,
-                        boxCentreY,
-                        childAhnenNumber,
-                        true));
-            } else {
-                individualBoxes.put(ahnenNumber, new TreeChartIndividual(0, ahnenNumber, "", "", GenderEnum.Unknown, boxCentreX, boxCentreY, childAhnenNumber, false));
-            }
-        }
-
-        //Create immediate family boxes
-        familyBoxes = new ArrayList<>();
-
-        float boxSpouseCentreX = individualBoxes.get(1).boxCentreX;
-        float boxChildCentreX = individualBoxes.get(1).boxCentreX - (boxHalfWidth * 2f + boxHorizontalSpacing);
-        float boxCentreY = individualBoxes.get(1).boxCentreY + boxHalfHeight * 2f + boxMinVerticalSpacing;
-
-        for(FamilyIndividuals familyIndividuals : familiesWithIndividuals) {
-            TreeChartFamily treeChartFamily = new TreeChartFamily();
-
-            if (familyIndividuals.spouse == null) {
-                treeChartFamily.spouse = new TreeChartIndividual(0, 0, "", "", GenderEnum.Unknown, boxSpouseCentreX, boxCentreY, 0, false);
-            } else {
-                treeChartFamily.spouse = new TreeChartIndividual(
-                        familyIndividuals.spouse.individualId,
-                        0,
-                        AncestryUtil.generateName(familyIndividuals.spouse, nameFormat),
-                        AncestryUtil.generateBirthDeathDate(familyIndividuals.spouse, true),
-                        familyIndividuals.spouse.gender,
-                        boxSpouseCentreX,
-                        boxCentreY,
-                        0,
-                        true);
-            }
-
-            for(Individual child : familyIndividuals.children) {
-                if (child != null){
-                    treeChartFamily.children.add(new TreeChartIndividual(
-                            child.individualId,
-                            0,
-                            AncestryUtil.generateName(child, nameFormat),
-                            AncestryUtil.generateBirthDeathDate(child, true),
-                            child.gender,
-                            boxChildCentreX,
-                            boxCentreY,
-                            0,
-                            true));
-                    boxCentreY += (boxHalfHeight * 2f + boxMinVerticalSpacing);
-                }
-            }
-
-            familyBoxes.add(treeChartFamily);
-        }
-
-        this.isLoaded = true;
-        Log.d("ARBORFAMILIAE-LOG", "Set up canvas with " + String.valueOf(individuals.size()) + " individuals and " + String.valueOf(maxGenerations) + " generations");
-        invalidate();
     }
 
     // override onSizeChanged
@@ -357,6 +295,152 @@ public class TreeChartCanvasView extends View {
         }
     }
 
+    private void processData() {
+        //Find ancestors of root individual
+        individuals = new HashMap<>();
+
+        individuals.put(1, this.rootIndividual);
+
+        processGeneration(1, 1, this.rootIndividual.parentFamilyId);
+
+        //Find families root individual
+        List<FamilyIndividuals> familiesWithIndividuals = new ArrayList<>();
+
+        List<Family> families = mainActivity.database.familyDao().getAllFamiliesForHusbandOrWife(treeId, mainActivity.activeIndividual.individualId);
+        for(Family family : families) {
+            FamilyIndividuals familyIndividuals = new FamilyIndividuals();
+            if (family.husbandId == this.rootIndividual.individualId && family.wifeId != -1) {
+                if (this.allIndividualsInTree.containsKey(family.wifeId)) {
+                    familyIndividuals.spouse = this.allIndividualsInTree.get(family.wifeId);
+                }
+            }
+            else if (family.wifeId == this.rootIndividual.individualId && family.husbandId != -1) {
+                if (this.allIndividualsInTree.containsKey(family.husbandId)) {
+                    familyIndividuals.spouse = this.allIndividualsInTree.get(family.husbandId);
+                }
+            }
+
+            List<FamilyChild> familyChildren = mainActivity.database.familyChildDao().getAllFamilyChildren(treeId, family.familyId);
+            for(FamilyChild child : familyChildren) {
+                if (this.allIndividualsInTree.containsKey(child.individualId)) {
+                    familyIndividuals.children.add(this.allIndividualsInTree.get(child.individualId));
+                }
+            }
+            familiesWithIndividuals.add(familyIndividuals);
+        }
+
+        this.individuals = individuals;
+        Individual individual;
+
+        //Create ancestor boxes
+        int highestAhnenNumber = 0;
+
+        highestAhnenNumber = AncestryUtil.getHighestAhnenNumberForGeneration(this.generations);
+        int highestGeneration = AncestryUtil.getGenerationNumberFromAhnenNumber(highestAhnenNumber);
+        int maxBoxesPerGeneration = (int)Math.pow(2, highestGeneration);
+
+        float maxReachY = (maxBoxesPerGeneration / 2f) * (boxHalfHeight * 2f + boxMinVerticalSpacing);
+
+        individualBoxes = new HashMap<>();
+        for(int ahnenNumber = 1; ahnenNumber <= highestAhnenNumber; ahnenNumber++) {
+            int generation = AncestryUtil.getGenerationNumberFromAhnenNumber(ahnenNumber);
+            int boxIndex = ahnenNumber - (int)Math.pow(2, generation);
+            int boxesForThisGeneration = (int)Math.pow(2, generation);
+
+            float boxCentreX = generation * (boxHalfWidth * 2f + boxHorizontalSpacing);
+
+            float boxTotalVerticalHeight = (maxReachY * 2f) / boxesForThisGeneration;
+
+            float boxCentreY = ((boxTotalVerticalHeight / 2f) + (boxIndex * boxTotalVerticalHeight)) - maxReachY;
+
+            int childAhnenNumber = AncestryUtil.getChildAhnenNumber(ahnenNumber);
+
+            if (individuals.containsKey(ahnenNumber)) {
+                individual = individuals.get(ahnenNumber);
+                individualBoxes.put(ahnenNumber, new TreeChartIndividual(
+                        individual.individualId,
+                        ahnenNumber,
+                        AncestryUtil.generateName(individual, nameFormat),
+                        AncestryUtil.generateBirthDeathDate(individual, true),
+                        individual.gender,
+                        boxCentreX,
+                        boxCentreY,
+                        childAhnenNumber,
+                        true));
+            } else {
+                individualBoxes.put(ahnenNumber, new TreeChartIndividual(0, ahnenNumber, "", "", GenderEnum.Unknown, boxCentreX, boxCentreY, childAhnenNumber, false));
+            }
+        }
+
+        //Create immediate family boxes
+        familyBoxes = new ArrayList<>();
+
+        float boxSpouseCentreX = individualBoxes.get(1).boxCentreX;
+        float boxChildCentreX = individualBoxes.get(1).boxCentreX - (boxHalfWidth * 2f + boxHorizontalSpacing);
+        float boxCentreY = individualBoxes.get(1).boxCentreY + boxHalfHeight * 2f + boxMinVerticalSpacing;
+
+        for(FamilyIndividuals familyIndividuals : familiesWithIndividuals) {
+            TreeChartFamily treeChartFamily = new TreeChartFamily();
+
+            if (familyIndividuals.spouse == null) {
+                treeChartFamily.spouse = new TreeChartIndividual(0, 0, "", "", GenderEnum.Unknown, boxSpouseCentreX, boxCentreY, 0, false);
+            } else {
+                treeChartFamily.spouse = new TreeChartIndividual(
+                        familyIndividuals.spouse.individualId,
+                        0,
+                        AncestryUtil.generateName(familyIndividuals.spouse, nameFormat),
+                        AncestryUtil.generateBirthDeathDate(familyIndividuals.spouse, true),
+                        familyIndividuals.spouse.gender,
+                        boxSpouseCentreX,
+                        boxCentreY,
+                        0,
+                        true);
+            }
+
+            for(Individual child : familyIndividuals.children) {
+                if (child != null){
+                    treeChartFamily.children.add(new TreeChartIndividual(
+                            child.individualId,
+                            0,
+                            AncestryUtil.generateName(child, nameFormat),
+                            AncestryUtil.generateBirthDeathDate(child, true),
+                            child.gender,
+                            boxChildCentreX,
+                            boxCentreY,
+                            0,
+                            true));
+                    boxCentreY += (boxHalfHeight * 2f + boxMinVerticalSpacing);
+                }
+            }
+
+            familyBoxes.add(treeChartFamily);
+        }
+
+        this.isLoaded = true;
+        Log.d("ARBORFAMILIAE-LOG", "Set up canvas with " + String.valueOf(individuals.size()) + " individuals and " + String.valueOf(this.generations) + " generations");
+        invalidate();
+    }
+
+    private void processGeneration(int generation, int childAhnenNumber, int familyId) {
+        Family family = this.allFamiliesInTree.get(familyId);
+        if (family == null)
+            return;
+
+        Individual father = this.allIndividualsInTree.get(family.husbandId);
+        if (father != null) {
+            individuals.put(childAhnenNumber * 2, father);
+            if (generation < this.generations && father.parentFamilyId != 0) {
+                processGeneration(generation + 1, childAhnenNumber * 2, father.parentFamilyId);
+            }
+        }
+        Individual mother = this.allIndividualsInTree.get(family.wifeId);
+        if (mother != null) {
+            individuals.put((childAhnenNumber * 2) + 1, mother);
+            if (generation < this.generations && mother.parentFamilyId != 0) {
+                processGeneration(generation + 1, (childAhnenNumber * 2) + 1, mother.parentFamilyId);
+            }
+        }
+    }
 
     //override the onTouchEvent
     @Override
@@ -380,6 +464,74 @@ public class TreeChartCanvasView extends View {
     }
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onSingleTapUp(MotionEvent event) {
+            boolean found = false;
+            if (isConfigured && isLoaded) {
+                float x = event.getX();
+                float y = event.getY();
+                float baseX = originX + offsetX;
+                float baseY = originY + offsetY;
+                float boxLeft;
+                float boxRight;
+                float boxTop;
+                float boxBottom;
+
+                for(TreeChartIndividual individual : individualBoxes.values()) {
+                    if (individual.recordExists) {
+                        boxLeft = baseX + ((individual.boxCentreX - boxHalfWidth) * scale);
+                        boxRight = baseX + ((individual.boxCentreX + boxHalfWidth) * scale);
+                        boxTop = baseY + ((individual.boxCentreY - boxHalfHeight) * scale);
+                        boxBottom = baseY + ((individual.boxCentreY + boxHalfHeight) * scale);
+                        if (x > boxLeft && x < boxRight && y > boxTop && y < boxBottom) {
+                            found = true;
+                            mainActivity.setActiveIndividual(individual.individualId, true);
+                            rootIndividual = allIndividualsInTree.get(individual.individualId);
+                            processData();
+                            break;
+                        }
+                    }
+                }
+
+                if (!found) {
+                    for(TreeChartFamily family : familyBoxes) {
+                        if (!found) {
+                            boxLeft = baseX + ((family.spouse.boxCentreX - boxHalfWidth) * scale);
+                            boxRight = baseX + ((family.spouse.boxCentreX + boxHalfWidth) * scale);
+                            boxTop = baseY + ((family.spouse.boxCentreY - boxHalfHeight) * scale);
+                            boxBottom = baseY + ((family.spouse.boxCentreY + boxHalfHeight) * scale);
+                            if (x > boxLeft && x < boxRight && y > boxTop && y < boxBottom) {
+                                found = true;
+                                mainActivity.setActiveIndividual(family.spouse.individualId, true);
+                                rootIndividual = allIndividualsInTree.get(family.spouse.individualId);
+                                processData();
+                            }
+                        }
+
+                        if (!found) {
+                            for (TreeChartIndividual child : family.children) {
+                                boxLeft = baseX + ((child.boxCentreX - boxHalfWidth) * scale);
+                                boxRight = baseX + ((child.boxCentreX + boxHalfWidth) * scale);
+                                boxTop = baseY + ((child.boxCentreY - boxHalfHeight) * scale);
+                                boxBottom = baseY + ((child.boxCentreY + boxHalfHeight) * scale);
+                                if (x > boxLeft && x < boxRight && y > boxTop && y < boxBottom) {
+                                    found = true;
+                                    mainActivity.setActiveIndividual(child.individualId, true);
+                                    rootIndividual = allIndividualsInTree.get(child.individualId);
+                                    processData();
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (found) {
+                            break;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {

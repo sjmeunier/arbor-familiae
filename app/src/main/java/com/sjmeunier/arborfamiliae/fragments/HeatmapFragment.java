@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,13 +22,16 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.sjmeunier.arborfamiliae.AncestryUtil;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.data.Events;
+import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.database.Place;
+import com.sjmeunier.arborfamiliae.util.Utility;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +50,10 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
     private LatLng rootLocation;
     private int maxGeneration;
     private Events events;
+    private NameFormat nameFormat;
+
+    private TextView heatmapText;
+
     Map<Integer, Individual> individuals;
 
     private int RADIUS = 20;
@@ -68,6 +76,9 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         maxGeneration = Integer.parseInt(settings.getString("generations_preference", "4"));
         events = Events.values()[Integer.parseInt(settings.getString("heatmap_events_preference", "0"))];
+        nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
+
+        heatmapText = view.findViewById(R.id.heatmap_text);
 
         MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
@@ -79,29 +90,55 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+
         getLocations();
 
-        float startVal = (events == Events.AllEvents) ? 2f : 1.2f;
-        float endVal = (events == Events.AllEvents) ? 15f : 8f;
-        float[] HEATMAP_GRADIENT_START_POINTS = {
-                (startVal / (float)locations.size()) , (endVal / (float)locations.size())
-        };
+        if (locations.size() > 0) {
+            heatmapText.setText(getEventName(events) + " up to " + Integer.toString(this.maxGeneration) + " generations for " + AncestryUtil.generateName(mainActivity.activeIndividual, nameFormat));
+            float startVal = (events == Events.AllEvents) ? 2f : 1.2f;
+            float endVal = (events == Events.AllEvents) ? 15f : 8f;
+            float[] HEATMAP_GRADIENT_START_POINTS = {
+                    (startVal / (float) locations.size()), (endVal / (float) locations.size())
+            };
 
-        Gradient HEATMAP_GRADIENT = new Gradient(ALT_HEATMAP_GRADIENT_COLORS,
-                HEATMAP_GRADIENT_START_POINTS);
+            Gradient HEATMAP_GRADIENT = new Gradient(ALT_HEATMAP_GRADIENT_COLORS,
+                    HEATMAP_GRADIENT_START_POINTS);
 
-        // Create a heat map tile provider, passing it the latlngs of the police stations.
-        mProvider = new HeatmapTileProvider.Builder()
-                .data(locations)
-                .radius(RADIUS)
-                .opacity(OPACITY)
-                .gradient(HEATMAP_GRADIENT)
-                .build();
+            // Create a heat map tile provider, passing it the latlngs of the police stations.
+            mProvider = new HeatmapTileProvider.Builder()
+                    .data(locations)
+                    .radius(RADIUS)
+                    .opacity(OPACITY)
+                    .gradient(HEATMAP_GRADIENT)
+                    .build();
 
-        // Add a tile overlay to the map, using the heat map tile provider.
-        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+            // Add a tile overlay to the map, using the heat map tile provider.
+            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(rootLocation));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(rootLocation));
+        } else {
+            heatmapText.setText("No events found");
+        }
+    }
+
+    private String getEventName(Events events) {
+
+        switch (events) {
+            case AllEvents:
+                return "All events";
+            case Births:
+                return "Births";
+            case Baptisms:
+                return "Baptisms";
+            case Deaths:
+                return "Deaths";
+            case Burials:
+                return "Burials";
+            case Marriages:
+                return "Marriages";
+
+        }
+        return "All events";
     }
 
     private void getLocations() {

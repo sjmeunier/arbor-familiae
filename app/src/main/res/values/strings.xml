@@ -8,14 +8,14 @@
     <string name="about_individualview_header">Individual</string>
     <string name="about_individualview_description">This view shows the biographical information for the currently active individual, including information on parents, spouses and children. You can navigate through the family by clicking on the names of the family members in this view</string>
 
-    <string name="about_fanchart_header">Fanchart</string>
-    <string name="about_fanchart_description">The fanchart shows the ancestors or descendants of the active individual in a fan chart. Clicking on the centre of the chart switches between ancestor/descendant view.</string>
+    <string name="about_fanchart_header">Fan Chart</string>
+    <string name="about_fanchart_description">The fan chart shows the ancestors or descendants of the active individual in a fan chart. Clicking on the centre of the chart switches between ancestor/descendant view. Long clicking on the individuals sets that individual as the root.</string>
 
     <string name="about_heatmap_header">Heatmap</string>
     <string name="about_heatmap_description">The heatmap shows the locations on a map related to the active individual</string>
 
     <string name="about_tree_header">Tree Chart</string>
-    <string name="about_tree_description">The tree view shows the relationships of the active individual in a tree structure</string>
+    <string name="about_tree_description">The tree view shows the relationships of the active individual in a tree structure. Clicking on individuals sets that individual to the root of the tree.</string>
 
     <string name="about_relationship_header">Relationship Chart</string>
     <string name="about_relationship_description">The relationship chart calculates and displayes the relationship between the root and active individuals</string>
@@ -36,10 +36,10 @@
     <string name="action_individual_details">Details</string>
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
-    <string name="action_tree">Tree</string>
+    <string name="action_tree">Tree Chart</string>
     <string name="action_trees">Change Trees</string>
     <string name="action_recent">Recent</string>
-    <string name="action_relationship">Relationship</string>
+    <string name="action_relationship">Relationship Chart</string>
 
     <string name="action_set_home_person">Set as root</string>
     <string name="action_jump_to_root">Jump to root</string>

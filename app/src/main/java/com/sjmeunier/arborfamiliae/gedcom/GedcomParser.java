@@ -24,6 +24,8 @@ import com.sjmeunier.arborfamiliae.database.Tree;
 import com.sjmeunier.arborfamiliae.util.FileDetail;
 import com.sjmeunier.arborfamiliae.util.FileUtils;
 
+import org.w3c.dom.Text;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,6 +70,7 @@ public class GedcomParser {
     private List<FamilySource> familySources = new ArrayList<FamilySource>();
 
     private static final String PARAM_OUT_MSG = "omsg";
+    private boolean alreadyFoundName = false;
 
     public int individualCount = 0;
     public int familyCount = 0;
@@ -75,6 +78,8 @@ public class GedcomParser {
     public int sourceCount = 0;
 
     public long bytesRead = 0;
+
+
 
 
     private OnGedcomImportProgressListener onGedcomImportProgressListener;
@@ -89,7 +94,10 @@ public class GedcomParser {
     }
 
     private int convertStringToInt(String value) {
-        return Integer.parseInt(value.replaceAll("[\\D]", ""));
+        value = value.replaceAll("[\\D]", "");
+        if (TextUtils.isEmpty(value))
+            return -1;
+        return Integer.parseInt(value);
     }
 
     public int parseGedcom(Context context, Uri uri) throws IOException, NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException {
@@ -269,33 +277,45 @@ public class GedcomParser {
             switch (val)
             {
                 case "INDI":
-                    currentRecord = GedcomRecordEnum.Individual;
                     int id = convertStringToInt(lineArray[1]);
-                    currentGedcomIndividual = new Individual(id, treeId);
-                    if (defaultIndividualId == 0) {
-                        defaultIndividualId = id;
-                        tree.defaultIndividual = defaultIndividualId;
+                    if (id != -1) {
+                        currentRecord = GedcomRecordEnum.Individual;
+                        currentGedcomIndividual = new Individual(id, treeId);
+                        if (defaultIndividualId == 0) {
+                            defaultIndividualId = id;
+                            tree.defaultIndividual = defaultIndividualId;
+                        }
                     }
                     currentSubRecord = GedcomSubRecordEnum.None;
+
                     break;
                 case "FAM":
-                    currentRecord = GedcomRecordEnum.Family;
-                    currentGedcomFamily = new Family(convertStringToInt(lineArray[1]), treeId);
-                    currentSubRecord = GedcomSubRecordEnum.None;
+                    id = convertStringToInt(lineArray[1]);
+                    if (id != -1) {
+                        currentRecord = GedcomRecordEnum.Family;
+                        currentGedcomFamily = new Family(id, treeId);
+                        currentSubRecord = GedcomSubRecordEnum.None;
+                    }
                     break;
                 case "NOTE":
-                    currentRecord = GedcomRecordEnum.Note;
-                    currentGedcomNote = new Note(convertStringToInt(lineArray[1]), treeId);
+                    id = convertStringToInt(lineArray[1]);
+                    if (id != -1) {
+                        currentRecord = GedcomRecordEnum.Note;
+                        currentGedcomNote = new Note(id, treeId);
 
-                    String[] subLine = lineArray[2].split(" ", 2);
-                    if (subLine.length > 1)
-                        currentGedcomNote.text = subLine[1];
-                    currentSubRecord = GedcomSubRecordEnum.None;
+                        String[] subLine = lineArray[2].split(" ", 2);
+                        if (subLine.length > 1)
+                            currentGedcomNote.text = subLine[1];
+                        currentSubRecord = GedcomSubRecordEnum.None;
+                    }
                     break;
                 case "SOUR":
-                    currentRecord = GedcomRecordEnum.Source;
-                    currentGedcomSource = new Source(convertStringToInt(lineArray[1]), treeId);
-                    currentSubRecord = GedcomSubRecordEnum.None;
+                    id = convertStringToInt(lineArray[1]);
+                    if (id != -1) {
+                        currentRecord = GedcomRecordEnum.Source;
+                        currentGedcomSource = new Source(id, treeId);
+                        currentSubRecord = GedcomSubRecordEnum.None;
+                    }
                     break;
             }
         }
@@ -337,7 +357,12 @@ public class GedcomParser {
             {
                 case "NAME":
                     currentSubRecord = GedcomSubRecordEnum.IndividualName;
-                    if (lineArray.length > 2) {
+                    if (TextUtils.isEmpty(currentGedcomIndividual.givenName) && TextUtils.isEmpty(currentGedcomIndividual.surname)) {
+                        alreadyFoundName = false;
+                    } else {
+                        alreadyFoundName = true;
+                    }
+                    if (lineArray.length > 2 && !alreadyFoundName) {
                         if (lineArray[2].contains("/")) {
                             String[] name = lineArray[2].split("/", 3);
                             currentGedcomIndividual.givenName = name[0].trim();
@@ -386,11 +411,17 @@ public class GedcomParser {
                     currentSubRecord = GedcomSubRecordEnum.None;
                     break;
                 case "NOTE":
-                    individualNotes.add(new IndividualNote(treeId, currentGedcomIndividual.individualId, convertStringToInt(lineArray[2])));
+                    int id = convertStringToInt(lineArray[2]);
+                    if (id != -1) {
+                        individualNotes.add(new IndividualNote(treeId, currentGedcomIndividual.individualId, id));
+                    }
                     currentSubRecord = GedcomSubRecordEnum.None;
                     break;
                 case "SOUR":
-                    individualSources.add(new IndividualSource(treeId, currentGedcomIndividual.individualId, convertStringToInt(lineArray[2])));
+                    id = convertStringToInt(lineArray[2]);
+                    if (id != -1) {
+                        individualSources.add(new IndividualSource(treeId, currentGedcomIndividual.individualId, id));
+                    }
                     currentSubRecord = GedcomSubRecordEnum.None;
                     break;
                 default:
@@ -418,11 +449,17 @@ public class GedcomParser {
                     currentSubRecord = GedcomSubRecordEnum.FamilyMarriage;
                     break;
                 case "NOTE":
-                    familyNotes.add(new FamilyNote(treeId, currentGedcomFamily.familyId, convertStringToInt(lineArray[2])));
+                    int id = convertStringToInt(lineArray[2]);
+                    if (id != -1) {
+                        familyNotes.add(new FamilyNote(treeId, currentGedcomFamily.familyId, id));
+                    }
                     currentSubRecord = GedcomSubRecordEnum.None;
                     break;
                 case "SOUR":
-                    familySources.add(new FamilySource(treeId, currentGedcomFamily.familyId, convertStringToInt(lineArray[2])));
+                    id = convertStringToInt(lineArray[2]);
+                    if (id != -1) {
+                        familySources.add(new FamilySource(treeId, currentGedcomFamily.familyId, id));
+                    }
                     currentSubRecord = GedcomSubRecordEnum.None;
                     break;
                 default:
@@ -506,16 +543,24 @@ public class GedcomParser {
             switch (lineArray[1])
             {
                 case "GIVN":
-                    currentGedcomIndividual.givenName = lineArray[2];
+                    if (!alreadyFoundName)
+                        currentGedcomIndividual.givenName = lineArray[2];
                     break;
                 case "SURN":
-                    currentGedcomIndividual.surname = lineArray[2];
+                    if (!alreadyFoundName)
+                        currentGedcomIndividual.surname = lineArray[2];
                     break;
                 case "NSFX":
-                    currentGedcomIndividual.suffix = lineArray[2];
+                    if (!alreadyFoundName)
+                        currentGedcomIndividual.suffix = lineArray[2];
                     break;
                 case "SPFX":
-                    currentGedcomIndividual.prefix = lineArray[2];
+                    if (!alreadyFoundName)
+                        currentGedcomIndividual.prefix = lineArray[2];
+                    break;
+                case "_AKA":
+                    if (!alreadyFoundName && !TextUtils.isEmpty(currentGedcomIndividual.suffix))
+                        currentGedcomIndividual.suffix = lineArray[2];
                     break;
             }
         }

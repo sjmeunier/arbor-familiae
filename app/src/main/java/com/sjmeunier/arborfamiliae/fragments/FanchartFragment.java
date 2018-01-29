@@ -55,7 +55,7 @@ public class FanchartFragment extends Fragment{
         maxGeneration = Integer.parseInt(settings.getString("generations_preference", "4"));
         nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 
-        fanchartCanvas.configureChart(mainActivity.activeIndividual, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.database, mainActivity.activeTree.id, maxGeneration, nameFormat);
+        fanchartCanvas.configureChart(mainActivity.activeIndividual, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.database, mainActivity.activeTree.id, mainActivity, maxGeneration, nameFormat);
     }
 
 }

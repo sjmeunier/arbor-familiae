@@ -25,7 +25,6 @@ import com.sjmeunier.arborfamiliae.database.Individual;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +43,7 @@ public class FanchartCanvasView extends View {
     private Map<Integer, Individual> allIndividualsInTree;
     private Map<Integer, Family> allFamiliesInTree;
     private Individual rootIndividual;
+    private MainActivity mainActivity;
 
     Context context;
     private Paint linePaint;
@@ -135,7 +135,7 @@ public class FanchartCanvasView extends View {
         invalidate();
     }
 
-    public void configureChart(Individual rootIndividual, Map<Integer, Individual> allIndividualsInTree, Map<Integer, Family> allFamiliesInTree, AppDatabase database, int treeId, int generations, NameFormat nameFormat)
+    public void configureChart(Individual rootIndividual, Map<Integer, Individual> allIndividualsInTree, Map<Integer, Family> allFamiliesInTree, AppDatabase database, int treeId, MainActivity mainActivity, int generations, NameFormat nameFormat)
     {
         this.individuals = new ArrayList<>();
         this.allIndividualsInTree = allIndividualsInTree;
@@ -145,7 +145,7 @@ public class FanchartCanvasView extends View {
         this.rootIndividual = rootIndividual;
         this.database = database;
         this.treeId = treeId;
-
+        this.mainActivity = mainActivity;
         this.showAncestors = true;
         this.isConfigured = true;
         processAncestorData();
@@ -374,7 +374,7 @@ public class FanchartCanvasView extends View {
                     currentStartAngle,
                     currentSweepAngle / 2f,
                     generation + 1));
-            if (generation < generations && father.parentFamilyId != 0) {
+            if (generation < generations - 1 && father.parentFamilyId != 0) {
                 processAncestorGeneration(generation + 1, currentStartAngle, currentSweepAngle / 2f, father.parentFamilyId);
             }
         }
@@ -387,7 +387,7 @@ public class FanchartCanvasView extends View {
                     currentStartAngle + (currentSweepAngle / 2f),
                     currentSweepAngle / 2f,
                     generation + 1));
-            if (generation < generations && mother.parentFamilyId != 0) {
+            if (generation < generations - 1 && mother.parentFamilyId != 0) {
                 processAncestorGeneration(generation + 1, currentStartAngle + (currentSweepAngle / 2f), currentSweepAngle / 2f, mother.parentFamilyId);
             }
         }
@@ -437,7 +437,7 @@ public class FanchartCanvasView extends View {
                         startAngle,
                         sweepAngle,
                         generation + 1));
-                if (generation < generations) {
+                if (generation < generations - 1) {
                     processDescendantGeneration(generation + 1, startAngle, sweepAngle, child.individualId);
                 }
                 startAngle += sweepAngle;
@@ -464,14 +464,92 @@ public class FanchartCanvasView extends View {
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
+        private int getGenerationFromRadius(float radius) {
+            int generation = -1;
+
+            if (showAncestors) {
+                if (radius < generationAncestorRadius[0])
+                    generation = 0;
+                else if (radius < generationAncestorRadius[1])
+                    generation = 1;
+                else if (radius < generationAncestorRadius[2])
+                    generation = 2;
+                else if (radius < generationAncestorRadius[3])
+                    generation = 3;
+                else if (radius < generationAncestorRadius[4])
+                    generation = 4;
+                else if (radius < generationAncestorRadius[5])
+                    generation = 5;
+                else if (radius < generationAncestorRadius[6])
+                    generation = 6;
+                else if (radius < generationAncestorRadius[7])
+                    generation = 7;
+                else if (radius < generationAncestorRadius[8])
+                    generation = 8;
+            } else {
+                if (radius < generationDescendantRadius[0])
+                    generation = 0;
+                else if (radius < generationDescendantRadius[1])
+                    generation = 1;
+                else if (radius < generationDescendantRadius[2])
+                    generation = 2;
+                else if (radius < generationDescendantRadius[3])
+                    generation = 3;
+                else if (radius < generationDescendantRadius[4])
+                    generation = 4;
+                else if (radius < generationDescendantRadius[5])
+                    generation = 5;
+                else if (radius < generationDescendantRadius[6])
+                    generation = 6;
+                else if (radius < generationDescendantRadius[7])
+                    generation = 7;
+                else if (radius < generationDescendantRadius[8])
+                    generation = 8;
+            }
+            return generation;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent event) {
+            if (isConfigured && isLoaded) {
+                float clickX = event.getX() - centreX - offsetX;
+                float clickY = event.getY() - centreY - offsetY;
+                float clickRadius = (float)Math.sqrt(clickX * clickX + clickY * clickY);
+                int generation = getGenerationFromRadius(clickRadius);
+                float angle = (float)Math.atan2(clickY, clickX) * 180f / (float)Math.PI;
+
+                if (angle < 0)
+                    angle = 360f + angle;
+
+                if (generation >= 1) {
+                    for (FanChartIndividual individual : individuals) {
+                        if (generation == individual.generation && angle > individual.startAngle && angle < (individual.startAngle + individual.sweepAngle))
+                        {
+                            rootIndividual = allIndividualsInTree.get(individual.individualId);
+                            mainActivity.setActiveIndividual(individual.individualId, true);
+                            if (showAncestors) {
+                                processAncestorData();
+                            } else {
+                                processDescendantData();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+
         @Override
         public boolean onSingleTapUp(MotionEvent event) {
             if (isConfigured && isLoaded) {
-                float radius = generationAncestorRadius[0] * scale;
+                float clickX = event.getX() - centreX - offsetX;
+                float clickY = event.getY() - centreY - offsetY;
+                float clickRadius = (float)Math.sqrt(clickX * clickX + clickY * clickY);
+                int generation = getGenerationFromRadius(clickRadius);
+                float angle = (float)Math.atan2(clickY, clickX) * 180f / (float)Math.PI;
 
-                float x = event.getX();
-                float y = event.getY();
-                if (x > (centreX + offsetX - radius) && x < (centreX + offsetX + radius) && y > (centreY + offsetY - radius) && y < (centreY + offsetY + radius)) {
+                if (generation == 0) {
                     if (showAncestors) {
                         showAncestors = false;
                         processDescendantData();
@@ -480,6 +558,7 @@ public class FanchartCanvasView extends View {
                         processAncestorData();
                     }
                 }
+
             }
             return true;
         }

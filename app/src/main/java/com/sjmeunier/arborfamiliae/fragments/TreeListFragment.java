@@ -141,10 +141,8 @@ public class TreeListFragment extends Fragment{
                 GedcomParser parser = new GedcomParser(database, context.getContentResolver());
                 treeId = parser.parseGedcom(context, gedcomResource);
                 message = "Finished importing tree";
-                Log.d("ARBORFAMILIAE-LOG", "Finished tree");
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 message = "Unable to import tree";
-                Log.d("ARBORFAMILIAE-LOG", ex.getMessage());
             }
 
             return message;

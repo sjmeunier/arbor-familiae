@@ -28,14 +28,7 @@ import java.util.Map;
 public class TreeChartFragment extends Fragment{
 
     private MainActivity mainActivity;
-
-    private int maxGeneration = 0;
-    private AppDatabase database;
-    private int treeId = 0;
-
-    private Map<Integer, Individual> individuals;
     private TreeChartCanvasView treeChartCanvas;
-    private NameFormat nameFormat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,75 +41,21 @@ public class TreeChartFragment extends Fragment{
         mainActivity = (MainActivity)getActivity();
 
         treeChartCanvas = (TreeChartCanvasView) view.findViewById(R.id.treechart_canvas);
-        drawChart();
+        configureChart();
         return view;
     }
 
-    private void drawChart() {
+    private void configureChart() {
         if (mainActivity.activeIndividual == null || mainActivity.activeTree == null)
             return;
 
-        database = AppDatabase.getDatabase(mainActivity);
-        treeId = mainActivity.activeTree.id;
+        AppDatabase database = AppDatabase.getDatabase(mainActivity);
+        int treeId = mainActivity.activeTree.id;
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-        maxGeneration = Integer.parseInt(settings.getString("generations_preference", "4"));
-        nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
+        int maxGeneration = Integer.parseInt(settings.getString("generations_preference", "4"));
+        NameFormat nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 
-        //Find ancestors of root individual
-        individuals = new HashMap<Integer, Individual>();
-
-        individuals.put(1, mainActivity.activeIndividual);
-
-        processGeneration(1, 1, mainActivity.activeIndividual.parentFamilyId);
-
-        //Find families root individual
-        List<FamilyIndividuals> familiesWithIndividuals = new ArrayList<>();
-
-        List<Family> families = mainActivity.database.familyDao().getAllFamiliesForHusbandOrWife(treeId, mainActivity.activeIndividual.individualId);
-        for(Family family : families) {
-            FamilyIndividuals familyIndividuals = new FamilyIndividuals();
-            if (family.husbandId == mainActivity.activeIndividual.individualId && family.wifeId != -1) {
-                if (mainActivity.individualsInActiveTree.containsKey(family.wifeId)) {
-                    familyIndividuals.spouse = mainActivity.individualsInActiveTree.get(family.wifeId);
-                }
-            }
-            else if (family.wifeId == mainActivity.activeIndividual.individualId && family.husbandId != -1) {
-                if (mainActivity.individualsInActiveTree.containsKey(family.husbandId)) {
-                    familyIndividuals.spouse = mainActivity.individualsInActiveTree.get(family.husbandId);
-                }
-            }
-
-            List<FamilyChild> familyChildren = mainActivity.database.familyChildDao().getAllFamilyChildren(treeId, family.familyId);
-            for(FamilyChild child : familyChildren) {
-                if (mainActivity.individualsInActiveTree.containsKey(child.individualId)) {
-                    familyIndividuals.children.add(mainActivity.individualsInActiveTree.get(child.individualId));
-                }
-            }
-            familiesWithIndividuals.add(familyIndividuals);
-        }
-
-        treeChartCanvas.configureChart(individuals, familiesWithIndividuals, maxGeneration, nameFormat);
-    }
-
-    private void processGeneration(int generation, int childAhnenNumber, int familyId) {
-        Family family = mainActivity.familiesInActiveTree.get(familyId);
-        if (family == null)
-            return;
-
-        Individual father = mainActivity.individualsInActiveTree.get(family.husbandId);
-        if (father != null) {
-            individuals.put(childAhnenNumber * 2, father);
-            if (generation < maxGeneration && father.parentFamilyId != 0) {
-                processGeneration(generation + 1, childAhnenNumber * 2, father.parentFamilyId);
-            }
-        }
-        Individual mother = mainActivity.individualsInActiveTree.get(family.wifeId);
-        if (mother != null) {
-            individuals.put((childAhnenNumber * 2) + 1, mother);
-            if (generation < maxGeneration && mother.parentFamilyId != 0) {
-                processGeneration(generation + 1, (childAhnenNumber * 2) + 1, mother.parentFamilyId);
-            }
-        }
+        treeChartCanvas.configureChart(mainActivity.individualsInActiveTree.get(mainActivity.activeIndividual.individualId), mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, database, treeId, mainActivity, maxGeneration, nameFormat);
     }
 }

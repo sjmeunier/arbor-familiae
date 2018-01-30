@@ -10,7 +10,7 @@
         <item name="android:textColorSecondary">@color/colorText</item>
         <item name="android:textColor">@color/colorText</item>
         <item name="android:actionMenuTextColor">@color/colorText</item>
-        <item name="android:listDivider">@color/colorListDivider</item>
+        <item name="android:listDivider">@drawable/gradient_line</item>
 
     </style>
     <style name="MyProgressDialog" parent="Theme.AppCompat.Dialog.Alert">

@@ -143,6 +143,14 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_jump_to_root) {
             setActiveIndividual(rootIndividualId, true);
+            FragmentManager fragmentManager = getFragmentManager();
+            try {
+                Fragment currentFragment = fragmentManager.findFragmentById(R.id.main_fragment_container);
+                fragmentManager.beginTransaction().replace(R.id.main_fragment_container, currentFragment.getClass().newInstance()).commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             // redirectToIndividual();
             return true;
         } else if (id == R.id.action_set_home_person) {

@@ -87,6 +87,10 @@
     <string name="label_root">Root</string>
     <string name="label_active">Active</string>
 
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_rename_tree">Rename tree</string>
+
     <string name="preferences_general">General</string>
     <string name="preferences_title_generations">Generations in charts</string>
     <string name="preferences_summary_generations">Number of generations to show in fanchart</string>

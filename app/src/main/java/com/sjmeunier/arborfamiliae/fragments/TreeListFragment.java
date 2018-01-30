@@ -1,23 +1,29 @@
 package com.sjmeunier.arborfamiliae.fragments;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.OnTreeListViewClickListener;
 import com.sjmeunier.arborfamiliae.OnTreeListViewDeleteListener;
+import com.sjmeunier.arborfamiliae.OnTreeListViewLongPressListener;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.TreeListAdapter;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
@@ -107,6 +113,36 @@ public class TreeListFragment extends Fragment{
             @Override
             public void OnTreeListViewClick(int treeId) {
                 mainActivity.setActiveTree(treeId);
+            }
+        });
+
+        treeListAdapter.setOnTreeListViewLongPressListener(new OnTreeListViewLongPressListener() {
+            @Override
+            public void OnTreeListViewLongPress(int treeId) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(new ContextThemeWrapper(mainActivity, R.style.MyProgressDialog));
+                alert.setTitle( mainActivity.getResources().getText(R.string.dialog_rename_tree));
+
+                final EditText input = new EditText(mainActivity);
+                alert.setView(input);
+
+                final int finalTreeId = treeId;
+                alert.setPositiveButton( mainActivity.getResources().getText(R.string.dialog_ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Tree tree = mainActivity.database.treeDao().getTree(finalTreeId);
+                        tree.name = input.getText().toString();
+                        mainActivity.database.treeDao().updateTree(tree);
+                        reloadTreeList();
+                    }
+                });
+
+                alert.setNegativeButton(mainActivity.getResources().getText(R.string.dialog_cancel),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alertDialog = alert.create();
+                alertDialog.show();
             }
         });
 

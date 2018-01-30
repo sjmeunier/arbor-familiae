@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_jump_to_root) {
             setActiveIndividual(rootIndividualId, true);
-            redirectToIndividual();
+            // redirectToIndividual();
             return true;
         } else if (id == R.id.action_set_home_person) {
             setRootIndividual();

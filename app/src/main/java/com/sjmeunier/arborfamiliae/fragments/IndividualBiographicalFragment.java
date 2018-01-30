@@ -64,6 +64,8 @@ public class IndividualBiographicalFragment extends Fragment {
             biographicalTable.setVisibility(View.VISIBLE);
             biographicalTable.removeAllViews();
 
+            boolean needsSpacerRow = true;
+
             TextView label;
             TextView text;
 
@@ -80,6 +82,9 @@ public class IndividualBiographicalFragment extends Fragment {
             text.setText(AncestryUtil.generateName(mainActivity.activeIndividual, nameFormat));
             biographicalTable.addView(row);
 
+            row = inflater.inflate(R.layout.tablerow_spacer, null, false);
+            biographicalTable.addView(row);
+
             String birth = AncestryUtil.getBirthDateAndPlace(mainActivity.activeIndividual, mainActivity.placesInActiveTree);
             if (birth.length() > 3) {
                 row = inflater.inflate(R.layout.tablerow_individual_twocolumn, null, false);
@@ -88,6 +93,7 @@ public class IndividualBiographicalFragment extends Fragment {
                 text = row.findViewById(R.id.tablerow_individual_twocolumn_col2);
                 text.setText(birth);
                 biographicalTable.addView(row);
+                needsSpacerRow = true;
             }
 
             String baptism = AncestryUtil.getBaptismDateAndPlace(mainActivity.activeIndividual, mainActivity.placesInActiveTree);
@@ -98,6 +104,7 @@ public class IndividualBiographicalFragment extends Fragment {
                 text = row.findViewById(R.id.tablerow_individual_twocolumn_col2);
                 text.setText(baptism);
                 biographicalTable.addView(row);
+                needsSpacerRow = true;
             }
 
             String death = AncestryUtil.getDeathDateAndPlace(mainActivity.activeIndividual, mainActivity.placesInActiveTree);
@@ -108,6 +115,7 @@ public class IndividualBiographicalFragment extends Fragment {
                 text = row.findViewById(R.id.tablerow_individual_twocolumn_col2);
                 text.setText(death);
                 biographicalTable.addView(row);
+                needsSpacerRow = true;
             }
 
             String burial = AncestryUtil.getBurialDateAndPlace(mainActivity.activeIndividual, mainActivity.placesInActiveTree);
@@ -118,10 +126,16 @@ public class IndividualBiographicalFragment extends Fragment {
                 text = row.findViewById(R.id.tablerow_individual_twocolumn_col2);
                 text.setText(burial);
                 biographicalTable.addView(row);
+                needsSpacerRow = true;
             }
 
 
             if (!TextUtils.isEmpty(mainActivity.activeIndividual.occupation)) {
+                if (needsSpacerRow) {
+                    row = inflater.inflate(R.layout.tablerow_spacer, null, false);
+                    biographicalTable.addView(row);
+                    needsSpacerRow = false;
+                }
                 row = inflater.inflate(R.layout.tablerow_individual_twocolumn, null, false);
                 label = row.findViewById(R.id.tablerow_individual_twocolumn_col1);
                 label.setText(mainActivity.getResources().getText(R.string.label_occupation));
@@ -189,15 +203,23 @@ public class IndividualBiographicalFragment extends Fragment {
                 text = row.findViewById(R.id.tablerow_individual_onecolumn_col1);
                 text.setText(" ");
                 biographicalTable.addView(row);
+                needsSpacerRow = true;
+            }
+            if (needsSpacerRow) {
+                row = inflater.inflate(R.layout.tablerow_spacer, null, false);
+                biographicalTable.addView(row);
+                needsSpacerRow = false;
             }
 
             //Marriages
             List<Family> marriages = mainActivity.database.familyDao().getAllFamiliesForHusbandOrWife(mainActivity.activeIndividual.treeId, mainActivity.activeIndividual.individualId);
             for(int i = 0; i < marriages.size(); i++) {
-                if ( i > 1) {
+                if ( i > 0) {
                     row = inflater.inflate(R.layout.tablerow_individual_onecolumn, null, false);
                     text = row.findViewById(R.id.tablerow_individual_onecolumn_col1);
                     text.setText(" ");
+                    biographicalTable.addView(row);
+                    row = inflater.inflate(R.layout.tablerow_spacer, null, false);
                     biographicalTable.addView(row);
                 }
 
@@ -270,6 +292,10 @@ public class IndividualBiographicalFragment extends Fragment {
 
             List<Note> notes = mainActivity.database.noteDao().getNotesInList(mainActivity.activeIndividual.treeId, noteIds);
             for(int i = 0; i < notes.size(); i++) {
+                if (i > 0) {
+                    row = inflater.inflate(R.layout.tablerow_spacer, null, false);
+                    biographicalTable.addView(row);
+                }
                 row = inflater.inflate(R.layout.tablerow_individual_onecolumn, null, false);
                 text = row.findViewById(R.id.tablerow_individual_onecolumn_col1);
                 text.setText(notes.get(i).text);
@@ -290,9 +316,18 @@ public class IndividualBiographicalFragment extends Fragment {
 
             List<Source> sources = mainActivity.database.sourceDao().getSourcesInList(mainActivity.activeIndividual.treeId, sourceIds);
             for(int i = 0; i < sources.size(); i++) {
+                if (i > 0) {
+                    row = inflater.inflate(R.layout.tablerow_spacer, null, false);
+                    biographicalTable.addView(row);
+                }
                 row = inflater.inflate(R.layout.tablerow_individual_onecolumn, null, false);
                 text = row.findViewById(R.id.tablerow_individual_onecolumn_col1);
                 text.setText(sources.get(i).text);
+                biographicalTable.addView(row);
+            }
+
+            if (sources.size() > 0) {
+                row = inflater.inflate(R.layout.tablerow_spacer, null, false);
                 biographicalTable.addView(row);
             }
 

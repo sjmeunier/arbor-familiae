@@ -12,7 +12,7 @@
         android:paddingBottom="2dp"
         android:textAllCaps="true"
         android:textColor="@color/colorTableHeaderText"
-        android:background="@color/colorTableHeaderBackground"
+        android:background="@color/colorPrimaryDark"
         android:text="">
     </TextView>
 </TableRow>

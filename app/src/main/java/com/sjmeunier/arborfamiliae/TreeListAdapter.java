@@ -23,6 +23,7 @@ public class TreeListAdapter  extends BaseAdapter {
     Resources resources;
     private OnTreeListViewDeleteListener onTreeListViewDeleteListener;
     private OnTreeListViewClickListener onTreeListViewClickListener;
+    private OnTreeListViewLongPressListener onTreeListViewLongPressListener;
 
     public TreeListAdapter(Activity activity, List<Tree> treeList) {
         this.activity = activity;
@@ -38,6 +39,11 @@ public class TreeListAdapter  extends BaseAdapter {
     public void setOnTreeListViewClickListener(OnTreeListViewClickListener onTreeListViewClickListener) {
         this.onTreeListViewClickListener = onTreeListViewClickListener;
     }
+
+    public void setOnTreeListViewLongPressListener(OnTreeListViewLongPressListener onTreeListViewLongPressListener) {
+        this.onTreeListViewLongPressListener = onTreeListViewLongPressListener;
+    }
+
 
     @Override
     public int getCount() {
@@ -65,6 +71,16 @@ public class TreeListAdapter  extends BaseAdapter {
                 onTreeListViewClickListener.OnTreeListViewClick(id);
             }
         });
+
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                int id = treeList.get(position).id;
+                onTreeListViewLongPressListener.OnTreeListViewLongPress(id);
+                return true;
+            }
+        });
+
         TextView treeNameView = (TextView) view.findViewById(R.id.treelist_tree_name);
         TextView individualCountView = (TextView) view.findViewById(R.id.treelist_individual_count);
 

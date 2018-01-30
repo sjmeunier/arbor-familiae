@@ -12,7 +12,7 @@
         android:id="@+id/result_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="@color/colorMainListDivider"
+        android:divider="@drawable/gradient_line"
         android:dividerHeight="1dp"
         android:footerDividersEnabled="false"
         android:paddingLeft="@dimen/treelist_padding_ends"

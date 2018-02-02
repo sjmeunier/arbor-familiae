@@ -87,6 +87,15 @@
     <string name="label_root">Root</string>
     <string name="label_active">Active</string>
 
+    <string name="button_rateapp">Rate App</string>
+    <string name="button_feedback">Send Feedback</string>
+
+    <string name="error_market_not_found">Could not open Android market, please install the market app.</string>
+
+    <string name="mail_feedback_title">Send Feedback</string>
+    <string name="mail_feedback_email">sjmeunier@gmail.com</string>
+    <string name="mail_feedback_subject">Feedback on Arbor Familiae</string>
+
     <string name="dialog_ok">Ok</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_rename_tree">Rename tree</string>

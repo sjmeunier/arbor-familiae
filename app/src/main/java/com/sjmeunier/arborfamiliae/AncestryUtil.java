@@ -203,13 +203,17 @@ public class AncestryUtil {
 
     public static String getMarriageDateAndPlace(Family family, Map<Integer, Place> places)
     {
+        if (family == null)
+            return "";
+
         String result = AncestryUtil.processDate(family.marriageDate, false);
         if (result == null || result.equals("?"))
             result = "";
         if (family.marriagePlace > -1) {
             if (!result.equals(""))
                 result += ", ";
-            result += places.get(family.marriagePlace).placeName;
+            if (places.containsKey(family.marriagePlace))
+                result += places.get(family.marriagePlace).placeName;
         }
         return result;
     }
@@ -217,52 +221,68 @@ public class AncestryUtil {
 
     public static String getDeathDateAndPlace(Individual individual, Map<Integer, Place> places)
     {
+        if (individual == null)
+            return "";
+
         String result = AncestryUtil.processDate(individual.diedDate, false);
         if (result == null || result.equals("?"))
             result = "";
         if (individual.diedPlace > -1) {
             if (!result.equals(""))
                 result += ", ";
-            result += places.get(individual.diedPlace).placeName;
+            if (places.containsKey(individual.diedPlace))
+                result += places.get(individual.diedPlace).placeName;
         }
         return result;
     }
 
     public static String getBaptismDateAndPlace(Individual individual, Map<Integer, Place> places)
     {
+        if (individual == null)
+            return "";
+
         String result = AncestryUtil.processDate(individual.baptismDate, false);
         if (result == null || result.equals("?"))
             result = "";
         if (individual.baptismPlace > -1) {
             if (!result.equals(""))
                 result += ", ";
-            result += places.get(individual.baptismPlace).placeName;
+            if (places.containsKey(individual.baptismPlace))
+                result += places.get(individual.baptismPlace).placeName;
         }
         return result;
     }
 
     public static String getBurialDateAndPlace(Individual individual, Map<Integer, Place> places)
     {
+        if (individual == null)
+            return "";
+
         String result = AncestryUtil.processDate(individual.burialDate, false);
         if (result == null || result.equals("?"))
             result = "";
         if (individual.burialPlace > -1) {
             if (!result.equals(""))
                 result += ", ";
-            result += places.get(individual.burialPlace).placeName;
+            if (places.containsKey(individual.burialPlace))
+                result += places.get(individual.burialPlace).placeName;
         }
         return result;
     }
 
     public static String getBirthDateAndPlace(Individual individual, Map<Integer, Place> places)
     {
+        if (individual == null)
+            return "";
+
         String result = AncestryUtil.processDate(individual.birthDate, false);
         if (result == null || result.equals("?"))
             result = "";
         if (individual.birthPlace > -1) {
             if (!result.equals(""))
                 result += ", ";
-            result += places.get(individual.birthPlace).placeName;
+            if (places.containsKey(individual.birthPlace))
+                result += places.get(individual.birthPlace).placeName;
         }
         return result;
     }

@@ -332,7 +332,7 @@ public class AncestryUtil {
             if (difference == 3)
                 relationship = "great-grand" + relationship.toLowerCase();
             else if (difference > 3)
-                relationship = "great(" + Integer.toString(difference - 2) + ")-" + relationship.toLowerCase();
+                relationship = "great(" + Integer.toString(difference - 2) + ")-grand" + relationship.toLowerCase();
         }
         else if (generationsFirstPerson == 0 || directDescent)
         {
@@ -347,7 +347,7 @@ public class AncestryUtil {
             if (difference == 3)
                 relationship = "great-grand" + relationship.toLowerCase();
             else if (difference > 3)
-                relationship = "great(" + Integer.toString(difference - 2) + ")-" + relationship.toLowerCase();
+                relationship = "great(" + Integer.toString(difference - 2) + ")-grand" + relationship.toLowerCase();
         }
         else if (generationsSecondPerson == 1)
         { //Aunt or Uncle

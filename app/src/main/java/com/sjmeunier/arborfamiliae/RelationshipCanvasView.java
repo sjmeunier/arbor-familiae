@@ -226,7 +226,7 @@ public class RelationshipCanvasView extends View {
                                         -1,
                                         AncestryUtil.generateName(ancestorSpouse, nameFormat),
                                         AncestryUtil.generateBirthDeathDate(ancestorSpouse, true),
-                                        AncestryUtil.calculateRelationship(rootLineage.size() - 1, generation, individual.gender == GenderEnum.Male, true),
+                                        AncestryUtil.calculateRelationship(rootLineage.size() - 1, generation, ancestorSpouse.gender == GenderEnum.Male, true),
                                         ancestorSpouse.gender,
                                         rootBoxCentreX + ((boxHalfWidth + boxHalfHorizontalSpacing) * 2),
                                         boxCentreY + ((boxHalfHeight + boxHalfVerticalSpacing) * 2 * generation))

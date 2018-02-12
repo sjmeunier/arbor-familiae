@@ -50,6 +50,7 @@
     <string name="progress_tree">Loading Tree</string>
     <string name="progress_pleasewait">Please wait...</string>
     <string name="progress_calculatingrelationship">Calculating relationship</string>
+    <string name="progress_exporting">Exporting</string>
 
     <string name="treelist_individuals">%d individuals</string>
     <string name="treelist_families">%d families</string>
@@ -91,6 +92,9 @@
     <string name="button_feedback">Send Feedback</string>
 
     <string name="error_market_not_found">Could not open Android market, please install the market app.</string>
+    <string name="error_could_not_share_chart">Could not share chart.</string>
+
+    <string name="dialog_share_chart_with">Share this chart with</string>
 
     <string name="mail_feedback_title">Send Feedback</string>
     <string name="mail_feedback_email">sjmeunier@gmail.com</string>

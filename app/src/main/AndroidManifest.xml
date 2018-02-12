@@ -11,6 +11,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.sjmeunier.arborfamiliae.chartfileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths"/>
+        </provider>
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD0A2RvQ_t3ene5kXPd_WLcAbW3Ch_I8Rg" />
     </application>

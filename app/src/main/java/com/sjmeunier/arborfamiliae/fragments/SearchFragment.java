@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,6 +43,9 @@ public class SearchFragment extends Fragment{
     }
 
     public void searchForIndividuals(String text) {
+        if (mainActivity.activeTree == null || TextUtils.isEmpty(text))
+            return;
+
         List<Individual> individuals =  mainActivity.database.individualDao().findIndividualsByName(mainActivity.activeTree.id, "%" + text + "%", 100);
 
 

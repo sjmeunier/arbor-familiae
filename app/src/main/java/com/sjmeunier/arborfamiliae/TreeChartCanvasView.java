@@ -1,6 +1,7 @@
 package com.sjmeunier.arborfamiliae;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -58,6 +59,7 @@ public class TreeChartCanvasView extends View {
     private Paint textPaint;
     private Paint maleFillPaint;
     private Paint femaleFillPaint;
+    private Paint backgroundPaint;
 
     private float scale = 0.5f;
     private ScaleGestureDetector scaleDetector;
@@ -123,6 +125,12 @@ public class TreeChartCanvasView extends View {
         femaleFillPaint.setColor(Color.parseColor("#44FF0AD5"));
         femaleFillPaint.setStyle(Paint.Style.FILL);
 
+        backgroundPaint = new Paint();
+        backgroundPaint.setAntiAlias(true);
+        backgroundPaint.setColor(Color.parseColor("#FFFFFF"));
+        backgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        backgroundPaint.setStrokeJoin(Paint.Join.ROUND);
+
         textPaint = new Paint();
         textPaint.setAntiAlias(true);
         textPaint.setColor(Color.parseColor("#DDDDDD"));
@@ -160,42 +168,76 @@ public class TreeChartCanvasView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        TreeChartIndividual individualBox;
-        TreeChartIndividual individualConnectingBox;
         if (isLoaded) {
-            textPaint.setStrokeWidth(2f);
-            textPaint.setTextSize(28f * scale);
-            fillPaint.setStrokeWidth(2f);
-            linePaint.setStrokeWidth(2f);
-            thickLinePaint.setStrokeWidth(6f * scale);
-
+            textPaint.setColor(Color.parseColor("#DDDDDD"));
+            femaleFillPaint.setColor(Color.parseColor("#44FF0AD5"));
+            maleFillPaint.setColor(Color.parseColor("#44BA0AFF"));
             originX = boxHalfWidth + boxHorizontalSpacing * scale;
             originY = getHeight() / 2f;
 
-            //Draw ancestors
-            for (Map.Entry<Integer, TreeChartIndividual> entry : individualBoxes.entrySet()) {
-                individualBox = entry.getValue();
-                if (individualBox.childAhnenNumber > 0)
-                    individualConnectingBox = individualBoxes.get(individualBox.childAhnenNumber);
-                else
-                    individualConnectingBox = null;
-                drawBox(canvas, entry.getValue(), individualConnectingBox, TreeChartIndividualType.Ancestor);
-            }
-
-            //Draw families
-            individualConnectingBox = individualBoxes.get(1);
-            for(TreeChartFamily family : familyBoxes) {
-                drawBox(canvas, family.spouse, individualConnectingBox, TreeChartIndividualType.Spouse);
-
-                individualConnectingBox = family.spouse;
-                for(TreeChartIndividual child : family.children) {
-                    drawBox(canvas, child, individualConnectingBox, TreeChartIndividualType.Child);
-                }
-            }
+            drawChart(canvas, originX, originY, offsetX, offsetY, scale);
         }
     }
 
-    private void drawBox(Canvas canvas, TreeChartIndividual individualBox, TreeChartIndividual individualConnectingBox, TreeChartIndividualType individualType) {
+    private void drawChart(Canvas canvas, float originX, float originY, float offsetX, float offsetY, float scale) {
+        TreeChartIndividual individualBox;
+        TreeChartIndividual individualConnectingBox;
+
+        textPaint.setStrokeWidth(2f);
+        textPaint.setTextSize(28f * scale);
+        fillPaint.setStrokeWidth(2f);
+        linePaint.setStrokeWidth(2f);
+        thickLinePaint.setStrokeWidth(6f * scale);
+
+        //Draw ancestors
+        for (Map.Entry<Integer, TreeChartIndividual> entry : individualBoxes.entrySet()) {
+            individualBox = entry.getValue();
+            if (individualBox.childAhnenNumber > 0)
+                individualConnectingBox = individualBoxes.get(individualBox.childAhnenNumber);
+            else
+                individualConnectingBox = null;
+            drawBox(canvas, originX, originY, offsetX, offsetY, scale, entry.getValue(), individualConnectingBox, TreeChartIndividualType.Ancestor);
+        }
+
+        //Draw families
+        individualConnectingBox = individualBoxes.get(1);
+        for(TreeChartFamily family : familyBoxes) {
+            drawBox(canvas, originX, originY, offsetX, offsetY, scale, family.spouse, individualConnectingBox, TreeChartIndividualType.Spouse);
+
+            individualConnectingBox = family.spouse;
+            for(TreeChartIndividual child : family.children) {
+                drawBox(canvas, originX, originY, offsetX, offsetY, scale, child, individualConnectingBox, TreeChartIndividualType.Child);
+            }
+        }
+
+    }
+
+    public Bitmap renderBitmap() throws Exception {
+        if (isLoaded) {
+            textPaint.setColor(Color.parseColor("#222222"));
+            femaleFillPaint.setColor(Color.parseColor("#FF0AB5"));
+            maleFillPaint.setColor(Color.parseColor("#BABAFF"));
+
+            int maxBoxesPerGeneration = (int)Math.pow(2, this.generations);
+
+            float width = (boxHalfWidth  * 2f + boxHorizontalSpacing) * (generations + 2) + boxHorizontalSpacing;
+            float height = (boxHalfHeight * 2f + boxMinVerticalSpacing) * maxBoxesPerGeneration;
+
+            Bitmap bitmap = Bitmap.createBitmap((int)width, (int)height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawRect(0, 0, width, height, backgroundPaint);
+
+            float originX = boxHalfWidth * 3 + boxHorizontalSpacing * 2;
+            float originY = height / 2f;
+
+            this.drawChart(canvas, originX, originY, 0, 0, 1);
+
+            return bitmap;
+        } else {
+            throw new Exception("Not Loaded");
+        }
+    }
+    private void drawBox(Canvas canvas, float originX, float originY, float offsetX, float offsetY, float scale, TreeChartIndividual individualBox, TreeChartIndividual individualConnectingBox, TreeChartIndividualType individualType) {
         //Draw individual box
         if (individualBox.recordExists) {
             if (individualBox.gender == GenderEnum.Male)
@@ -224,11 +266,11 @@ public class TreeChartCanvasView extends View {
         }
 
         textPaint.setTextSize(28f * scale);
-        drawText(canvas, individualBox.name, individualBox.dates, (boxHalfWidth * 2f - boxPadding) * scale, originX + offsetX + (individualBox.boxCentreX * scale), originY + offsetY + (individualBox.boxCentreY * scale));
+        drawText(canvas, individualBox.name, individualBox.dates, (boxHalfWidth * 2f - boxPadding) * scale, originX + offsetX + (individualBox.boxCentreX * scale), originY + offsetY + (individualBox.boxCentreY * scale), scale);
 
     }
 
-    private void drawText(Canvas canvas, String name, String dates, float maxWidth, float centreX, float centreY) {
+    private void drawText(Canvas canvas, String name, String dates, float maxWidth, float centreX, float centreY, float scale) {
         name = name.trim();
         while(name.contains("  "))
             name = name.replace("  ", " ");

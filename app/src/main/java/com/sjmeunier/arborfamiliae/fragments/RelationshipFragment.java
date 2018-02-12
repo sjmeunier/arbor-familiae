@@ -3,14 +3,21 @@ package com.sjmeunier.arborfamiliae.fragments;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.sjmeunier.arborfamiliae.ChartSaveAsyncTask;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
@@ -19,7 +26,11 @@ import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.RelationshipCanvasView;
+import com.sjmeunier.arborfamiliae.util.FileUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +73,21 @@ public class RelationshipFragment extends Fragment{
         RelationshipChartLoader relationshipChartLoader = new RelationshipChartLoader(mainActivity);
         relationshipChartLoader.execute();
 
+        ImageView saveButton = (ImageView) view.findViewById(R.id.save_button);
+        saveButton.setClickable(true);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Bitmap bitmap = relationshipCanvas.renderBitmap();
+                    ChartSaveAsyncTask chartSave = new ChartSaveAsyncTask(mainActivity);
+                    chartSave.execute(bitmap);
+                } catch (Exception e) {
+                    Toast.makeText(mainActivity, mainActivity.getResources().getText(R.string.error_could_not_share_chart), Toast.LENGTH_SHORT);
+                }
+
+            }
+        });
         return view;
     }
 

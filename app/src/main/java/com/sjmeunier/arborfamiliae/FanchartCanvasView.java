@@ -1,6 +1,7 @@
 package com.sjmeunier.arborfamiliae;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -51,6 +52,7 @@ public class FanchartCanvasView extends View {
     private Paint textPaint;
     private Paint maleFillPaint;
     private Paint femaleFillPaint;
+    private Paint backgroundPaint;
 
     private float scale = 1;
     private ScaleGestureDetector scaleDetector;
@@ -115,6 +117,12 @@ public class FanchartCanvasView extends View {
         fillPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         fillPaint.setStrokeJoin(Paint.Join.ROUND);
 
+        backgroundPaint = new Paint();
+        backgroundPaint.setAntiAlias(true);
+        backgroundPaint.setColor(Color.parseColor("#FFFFFF"));
+        backgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        backgroundPaint.setStrokeJoin(Paint.Join.ROUND);
+
         maleFillPaint = new Paint();
         maleFillPaint.setAntiAlias(true);
         maleFillPaint.setColor(Color.parseColor("#44BA0AFF"));
@@ -162,100 +170,130 @@ public class FanchartCanvasView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Path textPath;
-        PathMeasure pathMeasure = new PathMeasure();
-
         if (isLoaded) {
-            float totalTextPadding = textPadding * 2f * scale;
-
-            textPaint.setStrokeWidth(2f);
-            textPaint.setTextSize(28f * scale);
-            fillPaint.setStrokeWidth(2f);
-            linePaint.setStrokeWidth(2f);
-
+            textPaint.setColor(Color.parseColor("#DDDDDD"));
+            femaleFillPaint.setColor(Color.parseColor("#44FF0AD5"));
+            maleFillPaint.setColor(Color.parseColor("#44BA0AFF"));
             centreX = getWidth() / 2.0f;
             centreY = getHeight() / 2.0f;
-
-            float generationRadius0 = 0;
-            float generationRadius1 = 0;
-
-            canvas.drawCircle(centreX + offsetX, centreY + offsetY, generationAncestorRadius[0] * scale, fillPaint);
-
-            String rootText = "";
-            for (FanChartIndividual individual : individuals) {
-                if (individual.generation == 0) {
-                    if (showAncestors)
-                        rootText = "Ancestry of " + individual.name;
-                    else
-                        rootText = "Descendants of " + individual.name;
-                } else {
-                    if (showAncestors) {
-                        generationRadius0 = generationAncestorRadius[individual.generation - 1];
-                        generationRadius1 = generationAncestorRadius[individual.generation];
-                    } else {
-                        generationRadius0 = generationDescendantRadius[individual.generation - 1];
-                        generationRadius1 = generationDescendantRadius[individual.generation];
-                    }
-
-                    float endAngle = individual.startAngle + individual.sweepAngle;
-                    float innerRadius = generationRadius0 * scale;
-                    float outerRadius = generationRadius1 * scale;
-
-                    float radius = (generationRadius0 + ((generationRadius1 - generationRadius0) / 2f)) * scale;
-                    if (individual.gender == GenderEnum.Male) {
-                        maleFillPaint.setStrokeWidth(outerRadius - innerRadius);
-                        canvas.drawArc(centreX + offsetX - radius, centreY + offsetY - radius, centreX + offsetX + radius, centreY + offsetY + radius, individual.startAngle, individual.sweepAngle, false, maleFillPaint);
-                    } else {
-                        femaleFillPaint.setStrokeWidth(outerRadius - innerRadius);
-                        canvas.drawArc(centreX + offsetX - radius, centreY + offsetY - radius, centreX + offsetX + radius, centreY + offsetY + radius, individual.startAngle, individual.sweepAngle, false, femaleFillPaint);
-                    }
-                    canvas.drawArc(centreX + offsetX - innerRadius, centreY + offsetY - innerRadius, centreX + offsetX + innerRadius, centreY + offsetY + innerRadius, individual.startAngle, individual.sweepAngle, false, linePaint);
-                    canvas.drawArc(centreX + offsetX - outerRadius, centreY + offsetY - outerRadius, centreX + offsetX + outerRadius, centreY + offsetY + outerRadius, individual.startAngle, individual.sweepAngle, false, linePaint);
-                    canvas.drawLine(centreX + offsetX + ((generationRadius1 * scale) * (float) Math.cos(Math.toRadians(individual.startAngle))), centreY + offsetY + ((generationRadius1 * scale) * (float) Math.sin(Math.toRadians(individual.startAngle))), centreX + offsetX + ((generationRadius0 * scale) * (float) Math.cos(Math.toRadians(individual.startAngle))), centreY + offsetY + ((generationRadius0 * scale) * (float) Math.sin(Math.toRadians(individual.startAngle))), linePaint);
-                    canvas.drawLine(centreX + offsetX + ((generationRadius1 * scale) * (float) Math.cos(Math.toRadians(endAngle))), centreY + offsetY + ((generationRadius1 * scale) * (float) Math.sin(Math.toRadians(endAngle))), centreX + offsetX + ((generationRadius0 * scale) * (float) Math.cos(Math.toRadians(endAngle))), centreY + offsetY + ((generationRadius0 * scale) * (float) Math.sin(Math.toRadians(endAngle))), linePaint);
-
-                    textPath = new Path();
-
-                    int maxLines = 2;
-                    if (showAncestors) {
-                        if (individual.generation < 4) {
-                            textPath.addArc(centreX + offsetX - radius, centreY + offsetY - radius, centreX + offsetX + radius, centreY + offsetY + radius, individual.startAngle, individual.sweepAngle);
-                        } else {
-                            float textAngle = individual.startAngle + (individual.sweepAngle / 2f);
-                            textPath.moveTo(centreX + offsetX + ((generationRadius1 * scale) * (float) Math.cos(Math.toRadians(textAngle))), centreY + offsetY + ((generationRadius1 * scale) * (float) Math.sin(Math.toRadians(textAngle))));
-                            textPath.lineTo(centreX + offsetX + ((generationRadius0 * scale) * (float) Math.cos(Math.toRadians(textAngle))), centreY + offsetY + ((generationRadius0 * scale) * (float) Math.sin(Math.toRadians(textAngle))));
-                        }
-
-                        if (individual.generation == 4 || individual.generation == 5) {
-                            maxLines = 3;
-                        } else if (individual.generation > 6) {
-                            maxLines = 1;
-                        } else {
-                            maxLines = 2;
-                        }
-                    } else {
-                        maxLines = 3;
-                        float textAngle = individual.startAngle + (individual.sweepAngle / 2f);
-                        textPath.moveTo(centreX + offsetX + ((generationRadius1 * scale) * (float) Math.cos(Math.toRadians(textAngle))), centreY + offsetY + ((generationRadius1 * scale) * (float) Math.sin(Math.toRadians(textAngle))));
-                        textPath.lineTo(centreX + offsetX + ((generationRadius0 * scale) * (float) Math.cos(Math.toRadians(textAngle))), centreY + offsetY + ((generationRadius0 * scale) * (float) Math.sin(Math.toRadians(textAngle))));
-
-                        if (individual.generation > 3) {
-                            maxLines = 1;
-                        } else {
-                            maxLines = 2;
-                        }
-                    }
-                    drawText(canvas, individual.name, textPath, pathMeasure, maxLines, totalTextPadding);
-                }
-
-                textPaint.setTextSize(38f);
-                canvas.drawText(rootText, 10, textPaint.getTextSize() + 10, textPaint);
-
-            }
+            drawChart(canvas, centreX, centreY, offsetX, offsetY, scale);
         }
     }
 
-    private void drawText(Canvas canvas, String text, Path textPath, PathMeasure pathMeasure, int maxLines, float textPadding) {
+    private void drawChart(Canvas canvas, float centreX, float centreY, float offsetX, float offsetY, float scale) {
+        Path textPath;
+        PathMeasure pathMeasure = new PathMeasure();
+
+        float totalTextPadding = textPadding * 2f * scale;
+
+        textPaint.setStrokeWidth(2f);
+        textPaint.setTextSize(28f * scale);
+        fillPaint.setStrokeWidth(2f);
+        linePaint.setStrokeWidth(2f);
+
+        float generationRadius0 = 0;
+        float generationRadius1 = 0;
+
+        canvas.drawCircle(centreX + offsetX, centreY + offsetY, generationAncestorRadius[0] * scale, fillPaint);
+
+        String rootText = "";
+        for (FanChartIndividual individual : individuals) {
+            if (individual.generation == 0) {
+                if (showAncestors)
+                    rootText = "Ancestry of " + individual.name;
+                else
+                    rootText = "Descendants of " + individual.name;
+            } else {
+                if (showAncestors) {
+                    generationRadius0 = generationAncestorRadius[individual.generation - 1];
+                    generationRadius1 = generationAncestorRadius[individual.generation];
+                } else {
+                    generationRadius0 = generationDescendantRadius[individual.generation - 1];
+                    generationRadius1 = generationDescendantRadius[individual.generation];
+                }
+
+                float endAngle = individual.startAngle + individual.sweepAngle;
+                float innerRadius = generationRadius0 * scale;
+                float outerRadius = generationRadius1 * scale;
+
+                float radius = (generationRadius0 + ((generationRadius1 - generationRadius0) / 2f)) * scale;
+                if (individual.gender == GenderEnum.Male) {
+                    maleFillPaint.setStrokeWidth(outerRadius - innerRadius);
+                    canvas.drawArc(centreX + offsetX - radius, centreY + offsetY - radius, centreX + offsetX + radius, centreY + offsetY + radius, individual.startAngle, individual.sweepAngle, false, maleFillPaint);
+                } else {
+                    femaleFillPaint.setStrokeWidth(outerRadius - innerRadius);
+                    canvas.drawArc(centreX + offsetX - radius, centreY + offsetY - radius, centreX + offsetX + radius, centreY + offsetY + radius, individual.startAngle, individual.sweepAngle, false, femaleFillPaint);
+                }
+                canvas.drawArc(centreX + offsetX - innerRadius, centreY + offsetY - innerRadius, centreX + offsetX + innerRadius, centreY + offsetY + innerRadius, individual.startAngle, individual.sweepAngle, false, linePaint);
+                canvas.drawArc(centreX + offsetX - outerRadius, centreY + offsetY - outerRadius, centreX + offsetX + outerRadius, centreY + offsetY + outerRadius, individual.startAngle, individual.sweepAngle, false, linePaint);
+                canvas.drawLine(centreX + offsetX + ((generationRadius1 * scale) * (float) Math.cos(Math.toRadians(individual.startAngle))), centreY + offsetY + ((generationRadius1 * scale) * (float) Math.sin(Math.toRadians(individual.startAngle))), centreX + offsetX + ((generationRadius0 * scale) * (float) Math.cos(Math.toRadians(individual.startAngle))), centreY + offsetY + ((generationRadius0 * scale) * (float) Math.sin(Math.toRadians(individual.startAngle))), linePaint);
+                canvas.drawLine(centreX + offsetX + ((generationRadius1 * scale) * (float) Math.cos(Math.toRadians(endAngle))), centreY + offsetY + ((generationRadius1 * scale) * (float) Math.sin(Math.toRadians(endAngle))), centreX + offsetX + ((generationRadius0 * scale) * (float) Math.cos(Math.toRadians(endAngle))), centreY + offsetY + ((generationRadius0 * scale) * (float) Math.sin(Math.toRadians(endAngle))), linePaint);
+
+                textPath = new Path();
+
+                int maxLines = 2;
+                if (showAncestors) {
+                    if (individual.generation < 4) {
+                        textPath.addArc(centreX + offsetX - radius, centreY + offsetY - radius, centreX + offsetX + radius, centreY + offsetY + radius, individual.startAngle, individual.sweepAngle);
+                    } else {
+                        float textAngle = individual.startAngle + (individual.sweepAngle / 2f);
+                        textPath.moveTo(centreX + offsetX + ((generationRadius1 * scale) * (float) Math.cos(Math.toRadians(textAngle))), centreY + offsetY + ((generationRadius1 * scale) * (float) Math.sin(Math.toRadians(textAngle))));
+                        textPath.lineTo(centreX + offsetX + ((generationRadius0 * scale) * (float) Math.cos(Math.toRadians(textAngle))), centreY + offsetY + ((generationRadius0 * scale) * (float) Math.sin(Math.toRadians(textAngle))));
+                    }
+
+                    if (individual.generation == 4 || individual.generation == 5) {
+                        maxLines = 3;
+                    } else if (individual.generation > 6) {
+                        maxLines = 1;
+                    } else {
+                        maxLines = 2;
+                    }
+                } else {
+                    maxLines = 3;
+                    float textAngle = individual.startAngle + (individual.sweepAngle / 2f);
+                    textPath.moveTo(centreX + offsetX + ((generationRadius1 * scale) * (float) Math.cos(Math.toRadians(textAngle))), centreY + offsetY + ((generationRadius1 * scale) * (float) Math.sin(Math.toRadians(textAngle))));
+                    textPath.lineTo(centreX + offsetX + ((generationRadius0 * scale) * (float) Math.cos(Math.toRadians(textAngle))), centreY + offsetY + ((generationRadius0 * scale) * (float) Math.sin(Math.toRadians(textAngle))));
+
+                    if (individual.generation > 3) {
+                        maxLines = 1;
+                    } else {
+                        maxLines = 2;
+                    }
+                }
+                drawText(canvas, individual.name, textPath, pathMeasure, maxLines, totalTextPadding, scale);
+            }
+
+            textPaint.setTextSize(38f);
+            canvas.drawText(rootText, 10, textPaint.getTextSize() + 10, textPaint);
+
+        }
+    }
+    public Bitmap renderBitmap() throws Exception {
+        if (isLoaded) {
+            textPaint.setColor(Color.parseColor("#222222"));
+            femaleFillPaint.setColor(Color.parseColor("#FF0AB5"));
+            maleFillPaint.setColor(Color.parseColor("#BABAFF"));
+
+            float radius = 0;
+            if (showAncestors) {
+                radius = generationAncestorRadius[generations] + 100;
+            } else {
+                radius = generationDescendantRadius[generations] + 100;
+            }
+
+            Bitmap bitmap = Bitmap.createBitmap((int)radius * 2 + 100, (int)radius * 2 + 100, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawRect(0, 0, radius * 2f + 100f, radius * 2f + 100f, backgroundPaint);
+
+            this.drawChart(canvas, radius + 50f, radius + 50f, 0, 0, 1);
+
+            return bitmap;
+        } else {
+            throw new Exception("Not Loaded");
+        }
+    }
+
+    private void drawText(Canvas canvas, String text, Path textPath, PathMeasure pathMeasure, int maxLines, float textPadding, float scale) {
         pathMeasure.setPath(textPath, false);
         maxLines = Math.min(3, maxLines);
 

@@ -1,6 +1,7 @@
 package com.sjmeunier.arborfamiliae;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -41,6 +42,7 @@ public class RelationshipCanvasView extends View {
     private Paint textPaint;
     private Paint maleFillPaint;
     private Paint femaleFillPaint;
+    private Paint backgroundPaint;
 
     private float scale = 0.5f;
     private ScaleGestureDetector scaleDetector;
@@ -89,6 +91,12 @@ public class RelationshipCanvasView extends View {
         thickLinePaint.setColor(Color.parseColor("#0F5858"));
         thickLinePaint.setStyle(Paint.Style.STROKE);
         thickLinePaint.setStrokeJoin(Paint.Join.ROUND);
+
+        backgroundPaint = new Paint();
+        backgroundPaint.setAntiAlias(true);
+        backgroundPaint.setColor(Color.parseColor("#FFFFFF"));
+        backgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        backgroundPaint.setStrokeJoin(Paint.Join.ROUND);
 
         fillPaint = new Paint();
         fillPaint.setAntiAlias(true);
@@ -293,56 +301,87 @@ public class RelationshipCanvasView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (isLoaded) {
-            textPaint.setStrokeWidth(2f);
-            textPaint.setTextSize(28f * scale);
-            fillPaint.setStrokeWidth(2f);
-            linePaint.setStrokeWidth(2f);
-            thickLinePaint.setStrokeWidth(6f * scale);
+            textPaint.setColor(Color.parseColor("#DDDDDD"));
+            femaleFillPaint.setColor(Color.parseColor("#44FF0AD5"));
+            maleFillPaint.setColor(Color.parseColor("#44BA0AFF"));
 
-            for (RelationshipChartIndividual individualBox : individualBoxes) {
-                if (individualBox.gender == GenderEnum.Male)
-                    canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), maleFillPaint);
-                else
-                    canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), femaleFillPaint);
-
-                canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), linePaint);
-
-                if (individualBox.generationNumber == 0) {
-
-                    if (drawSpouse) {
-                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), thickLinePaint);
-                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                    } else {
-                        if (isDirectDescendant) {
-                            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                        } else {
-                            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                            canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), thickLinePaint);
-                        }
-                    }
-
-                } else if (individualBox.generationNumber > 1) {
-                    canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight - boxHalfVerticalSpacing - boxHalfVerticalSpacing) * scale), thickLinePaint);
-                }
-
-                textPaint.setTextSize(28f * scale);
-                drawText(canvas, individualBox.name, individualBox.dates, individualBox.relationship, (boxHalfWidth * 2f - boxPadding) * scale, originX + offsetX + (individualBox.boxCentreX * scale), originY + offsetY + (individualBox.boxCentreY * scale));
-            }
-
-
-            textPaint.setTextSize(38f);
-            canvas.drawText(messageLine1, 10, textPaint.getTextSize() + 10, textPaint);
-            canvas.drawText(messageLine2, 10, (textPaint.getTextSize() * 2) + 10, textPaint);
-            canvas.drawText(messageLine3, 10, (textPaint.getTextSize() * 3) + 10, textPaint);
+            drawChart(canvas, originX, originY, offsetX, offsetY, scale);
         }
     }
 
-    private void drawText(Canvas canvas, String name, String dates, String relationship, float maxWidth, float centreX, float centreY) {
+    private void drawChart(Canvas canvas, float originX, float originY, float offsetX, float offsetY, float scale) {
+        textPaint.setStrokeWidth(2f);
+        textPaint.setTextSize(28f * scale);
+        fillPaint.setStrokeWidth(2f);
+        linePaint.setStrokeWidth(2f);
+        thickLinePaint.setStrokeWidth(6f * scale);
+
+        for (RelationshipChartIndividual individualBox : individualBoxes) {
+            if (individualBox.gender == GenderEnum.Male)
+                canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), maleFillPaint);
+            else
+                canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), femaleFillPaint);
+
+            canvas.drawRect(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), linePaint);
+
+            if (individualBox.generationNumber == 0) {
+
+                if (drawSpouse) {
+                    canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), thickLinePaint);
+                    canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                    canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                    canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                    canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                } else {
+                    if (isDirectDescendant) {
+                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                    } else {
+                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                        canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX - boxHalfWidth - boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), originX + offsetX + ((individualBox.boxCentreX + boxHalfWidth + boxHalfHorizontalSpacing) * scale), originY + offsetY + ((individualBox.boxCentreY + boxHalfHeight + boxHalfVerticalSpacing) * scale), thickLinePaint);
+                    }
+                }
+
+            } else if (individualBox.generationNumber > 1) {
+                canvas.drawLine(originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight) * scale), originX + offsetX + ((individualBox.boxCentreX) * scale), originY + offsetY + ((individualBox.boxCentreY - boxHalfHeight - boxHalfVerticalSpacing - boxHalfVerticalSpacing) * scale), thickLinePaint);
+            }
+
+            textPaint.setTextSize(28f * scale);
+            drawText(canvas, individualBox.name, individualBox.dates, individualBox.relationship, (boxHalfWidth * 2f - boxPadding) * scale, originX + offsetX + (individualBox.boxCentreX * scale), originY + offsetY + (individualBox.boxCentreY * scale), scale);
+        }
+
+
+        textPaint.setTextSize(38f);
+        canvas.drawText(messageLine1, 10, textPaint.getTextSize() + 10, textPaint);
+        canvas.drawText(messageLine2, 10, (textPaint.getTextSize() * 2) + 10, textPaint);
+        canvas.drawText(messageLine3, 10, (textPaint.getTextSize() * 3) + 10, textPaint);
+
+    }
+
+    public Bitmap renderBitmap() throws Exception {
+        if (isLoaded) {
+            textPaint.setColor(Color.parseColor("#222222"));
+            femaleFillPaint.setColor(Color.parseColor("#FF0AB5"));
+            maleFillPaint.setColor(Color.parseColor("#BABAFF"));
+
+            float width = (boxHalfWidth + boxHalfHorizontalSpacing) * 4f;
+            int maxGen = Math.max(rootLineage.size(), targetLineage.size());
+            float height = (boxHalfHeight + boxHalfVerticalSpacing) * 2f * maxGen + boxHalfHeight + 200 + boxHalfVerticalSpacing;
+
+            Bitmap bitmap = Bitmap.createBitmap((int)width, (int)height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            canvas.drawRect(0, 0, width, height, backgroundPaint);
+
+            this.drawChart(canvas, originX, originY, 0, 0, 1);
+
+            return bitmap;
+        } else {
+            throw new Exception("Not Loaded");
+        }
+    }
+
+    private void drawText(Canvas canvas, String name, String dates, String relationship, float maxWidth, float centreX, float centreY, float scale) {
         name = name.trim();
         while(name.contains("  "))
             name = name.replace("  ", " ");

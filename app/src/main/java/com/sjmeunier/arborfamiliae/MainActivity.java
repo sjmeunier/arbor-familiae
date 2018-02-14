@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
     private TextView activeIndividualName;
     private TextView rootIndividualName;
 
-    private NameFormat nameFormat;
+    public NameFormat nameFormat;
 
     private Menu menu;
 

@@ -236,7 +236,7 @@ public class IndividualBiographicalFragment extends Fragment {
                 if (spouse != null) {
                     row = inflater.inflate(R.layout.tablerow_individual_onecolumn, null, false);
                     text = row.findViewById(R.id.tablerow_individual_onecolumn_col1);
-                    text.setText(Utility.getHtmlString(AncestryUtil.getMarriageLine(spouse, marriage, nameFormat, mainActivity.placesInActiveTree)));
+                    text.setText(Utility.getHtmlString(AncestryUtil.getMarriageLine(spouse, marriage, nameFormat, mainActivity.placesInActiveTree, true)));
                     text.setTag(spouse.individualId);
                     text.setOnClickListener(new View.OnClickListener() {
                         @Override

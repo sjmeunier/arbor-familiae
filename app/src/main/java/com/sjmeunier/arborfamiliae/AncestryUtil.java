@@ -108,6 +108,22 @@ public class AncestryUtil {
         return "";
     }
 
+    public static String generateBirthDeathDateWithPlace(Individual individual, Map<Integer, Place> places)
+    {
+        String born = AncestryUtil.getBirthDateAndPlace(individual, places);
+        String died = AncestryUtil.getDeathDateAndPlace(individual, places);
+        if (!born.equals("") || !died.equals(""))
+        {
+            if (born.equals(""))
+                return "(d." + died + ")";
+            else if (died.equals(""))
+                return "(b." + born + ")";
+            else
+                return "(b." + born + ", d." + died + ")";
+        }
+        return "";
+    }
+
     public static String generateName(Individual individual, NameFormat nameFormat)
     {
         if (individual == null)
@@ -152,25 +168,6 @@ public class AncestryUtil {
         return name.trim();
     }
 
-    public static String generateShortName(Individual individual, boolean surnameFirst)
-    {
-        if (individual == null)
-            return "";
-
-        String name = "";
-        if (surnameFirst) {
-            name = individual.surname;
-            if (!TextUtils.isEmpty(individual.givenName))
-                name += ", " + individual.givenName;
-        } else {
-            name = individual.givenName;
-            if (!TextUtils.isEmpty(individual.surname))
-                name += " " + individual.surname;
-        }
-
-        return name;
-    }
-
 
     public static String generateBoldNameWithDates(Individual individual, NameFormat nameFormat)
     {
@@ -184,10 +181,10 @@ public class AncestryUtil {
         return name;
     }
 
-    public static String getMarriageLine(Individual spouse, Family family, NameFormat nameFormat, Map<Integer, Place> places)
+    public static String getMarriageLine(Individual spouse, Family family, NameFormat nameFormat, Map<Integer, Place> places, boolean includeMarkup)
     {
-        String result = "x <b>" + generateName(spouse, nameFormat);
-        result += "</b> " + generateBirthDeathDate(spouse, true);
+        String result = "x " + ((includeMarkup) ? "<b>" : "") + generateName(spouse, nameFormat);
+        result += ((includeMarkup) ? "</b>" : "") + " " + generateBirthDeathDate(spouse, true);
         String marriageDate = getMarriageDateAndPlace(family, places);
         if (!TextUtils.isEmpty(marriageDate))
             result += " m. " + marriageDate;

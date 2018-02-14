@@ -22,8 +22,12 @@ public class SettingsFragment extends PreferenceFragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         prefs.registerOnSharedPreferenceChangeListener(spChanged);
 
-        ListPreference generationsPreference = (ListPreference)findPreference("generations_preference");
-        generationsPreference.setSummary(generationsPreference.getEntry());
+        ListPreference fanchartGenerationsPreference = (ListPreference)findPreference("fanchart_generations_preference");
+        fanchartGenerationsPreference.setSummary(fanchartGenerationsPreference.getEntry());
+        ListPreference treechartGenerationsPreference = (ListPreference)findPreference("treechart_generations_preference");
+        treechartGenerationsPreference.setSummary(treechartGenerationsPreference.getEntry());
+        ListPreference heatmapGenerationsPreference = (ListPreference)findPreference("heatmap_generations_preference");
+        heatmapGenerationsPreference.setSummary(heatmapGenerationsPreference.getEntry());
         ListPreference nameFormatPreference = (ListPreference)findPreference("nameformat_preference");
         nameFormatPreference.setSummary(nameFormatPreference.getEntry());
         ListPreference heatmapEventsPreference = (ListPreference)findPreference("heatmap_events_preference");

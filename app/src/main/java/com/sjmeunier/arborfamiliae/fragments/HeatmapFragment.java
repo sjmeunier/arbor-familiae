@@ -74,7 +74,7 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
 
         mainActivity = (MainActivity)getActivity();
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-        maxGeneration = Integer.parseInt(settings.getString("generations_preference", "4"));
+        maxGeneration = Integer.parseInt(settings.getString("heatmap_generations_preference", "4"));
         events = Events.values()[Integer.parseInt(settings.getString("heatmap_events_preference", "0"))];
         nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 

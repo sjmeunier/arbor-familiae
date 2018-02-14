@@ -6,9 +6,25 @@
     android:title="@string/preferences_general">
 
     <ListPreference
-        android:key="generations_preference"
-        android:title="@string/preferences_title_generations"
-        android:summary="@string/preferences_summary_generations"
+        android:key="fanchart_generations_preference"
+        android:title="@string/preferences_title_generations_fanchart"
+        android:summary="@string/preferences_summary_generations_fanchart"
+        android:entries="@array/preferences_generation_list"
+        android:entryValues="@array/preferences_generation_list"
+        android:defaultValue="4"
+        android:dialogTitle="@string/preferences_dialog_title_generations" />
+    <ListPreference
+        android:key="treechart_generations_preference"
+        android:title="@string/preferences_title_generations_treechart"
+        android:summary="@string/preferences_summary_generations_treechart"
+        android:entries="@array/preferences_generation_list_short"
+        android:entryValues="@array/preferences_generation_list_short"
+        android:defaultValue="4"
+        android:dialogTitle="@string/preferences_dialog_title_generations" />
+    <ListPreference
+        android:key="heatmap_generations_preference"
+        android:title="@string/preferences_title_generations_heatmap"
+        android:summary="@string/preferences_summary_generations_heatmap"
         android:entries="@array/preferences_generation_list"
         android:entryValues="@array/preferences_generation_list"
         android:defaultValue="4"

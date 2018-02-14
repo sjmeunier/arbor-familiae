@@ -1,16 +1,10 @@
 package com.sjmeunier.arborfamiliae.fragments;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +17,6 @@ import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.TreeChartCanvasView;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class TreeChartFragment extends Fragment{
 
@@ -72,7 +62,7 @@ public class TreeChartFragment extends Fragment{
         int treeId = mainActivity.activeTree.id;
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-        int maxGeneration = Integer.parseInt(settings.getString("generations_preference", "4"));
+        int maxGeneration = Integer.parseInt(settings.getString("treechart_generations_preference", "4"));
         NameFormat nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 
         treeChartCanvas.configureChart(mainActivity.individualsInActiveTree.get(mainActivity.activeIndividual.individualId), mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, database, treeId, mainActivity, maxGeneration, nameFormat);

@@ -83,7 +83,7 @@ public class FanchartFragment extends Fragment{
             return;
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-        maxGeneration = Integer.parseInt(settings.getString("generations_preference", "4"));
+        maxGeneration = Integer.parseInt(settings.getString("fanchart_generations_preference", "4"));
         nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 
         fanchartCanvas.configureChart(mainActivity.activeIndividual, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.database, mainActivity.activeTree.id, mainActivity, maxGeneration, nameFormat);

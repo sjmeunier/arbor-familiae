@@ -26,6 +26,9 @@
     <string name="about_treelist_header">Tree List</string>
     <string name="about_treelist_description">The tree list view shows all currently available trees saved. From this view you can also import new trees from GEDCOM files and select an active tree</string>
 
+    <string name="about_reports_header">Reports</string>
+    <string name="about_reports_description">Reports allow you to export desecendant/ancestor reports to PDF files</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -39,6 +42,7 @@
     <string name="action_tree">Tree Chart</string>
     <string name="action_trees">Change Trees</string>
     <string name="action_recent">Recent</string>
+    <string name="action_reports">Reports</string>
     <string name="action_relationship">Relationship Chart</string>
 
     <string name="action_set_home_person">Set as root</string>
@@ -51,6 +55,7 @@
     <string name="progress_pleasewait">Please wait...</string>
     <string name="progress_calculatingrelationship">Calculating relationship</string>
     <string name="progress_exporting">Exporting</string>
+    <string name="progress_generating_report">Generating report</string>
 
     <string name="treelist_individuals">%d individuals</string>
     <string name="treelist_families">%d families</string>
@@ -88,8 +93,13 @@
     <string name="label_root">Root</string>
     <string name="label_active">Active</string>
 
+    <string name="label_report_type">Report Type</string>
+    <string name="label_maximum_generations">Maximum generations back</string>
+    <string name="report_type_prompt">Report Type</string>
+
     <string name="button_rateapp">Rate App</string>
     <string name="button_feedback">Send Feedback</string>
+    <string name="button_generate_report">Generate Report</string>
 
     <string name="error_market_not_found">Could not open Android market, please install the market app.</string>
     <string name="error_could_not_share_chart">Could not share chart.</string>
@@ -105,12 +115,16 @@
     <string name="dialog_rename_tree">Rename tree</string>
 
     <string name="preferences_general">General</string>
-    <string name="preferences_title_generations">Generations in charts</string>
-    <string name="preferences_summary_generations">Number of generations to show in fanchart</string>
+    <string name="preferences_title_generations_treechart">Generations in tree chart</string>
+    <string name="preferences_title_generations_fanchart">Generations in fan chart</string>
+    <string name="preferences_title_generations_heatmap">Generations in heatmap</string>
+    <string name="preferences_summary_generations_treechart">Number of generations to show in treechart</string>
+    <string name="preferences_summary_generations_fanchart">Number of generations to show in fanchart</string>
+    <string name="preferences_summary_generations_heatmap">Number of generations to show in heatmap</string>
     <string name="preferences_dialog_title_generations">Generations to show</string>
 
     <string name="preferences_title_nameformat">Name format</string>
-    <string name="preferences_summary_nameformat">Name format to show in tree chart</string>
+    <string name="preferences_summary_nameformat">Name format to show in charts</string>
     <string name="preferences_dialog_title_nameformat">Name format</string>
 
     <string name="preferences_heatmap">Heatmap</string>

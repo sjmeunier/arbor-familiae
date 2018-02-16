@@ -265,7 +265,7 @@ public class IndividualBiographicalFragment extends Fragment {
 
                     row = inflater.inflate(R.layout.tablerow_individual_onecolumn, null, false);
                     text = row.findViewById(R.id.tablerow_individual_onecolumn_col1);
-                    text.setText(Utility.getHtmlString(AncestryUtil.getChildLine(children.get(j), nameFormat)));
+                    text.setText(Utility.getHtmlString(AncestryUtil.getChildLine(children.get(j), nameFormat, true)));
                     text.setTag(children.get(j).individualId);
                     text.setOnClickListener(new View.OnClickListener() {
                         @Override

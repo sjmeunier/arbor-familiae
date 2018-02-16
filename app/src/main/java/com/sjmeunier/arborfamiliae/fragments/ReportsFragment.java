@@ -1,49 +1,34 @@
 package com.sjmeunier.arborfamiliae.fragments;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.sjmeunier.arborfamiliae.MainActivity;
-import com.sjmeunier.arborfamiliae.OnTreeListViewClickListener;
-import com.sjmeunier.arborfamiliae.OnTreeListViewDeleteListener;
-import com.sjmeunier.arborfamiliae.OnTreeListViewLongPressListener;
 import com.sjmeunier.arborfamiliae.R;
-import com.sjmeunier.arborfamiliae.TreeListAdapter;
-import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.data.ReportTypes;
-import com.sjmeunier.arborfamiliae.database.AppDatabase;
-import com.sjmeunier.arborfamiliae.database.Tree;
-import com.sjmeunier.arborfamiliae.gedcom.GedcomParser;
-import com.sjmeunier.arborfamiliae.reports.AncestryReport;
+import com.sjmeunier.arborfamiliae.reports.AncestryDetailedReport;
+import com.sjmeunier.arborfamiliae.reports.AncestrySummaryReport;
 import com.sjmeunier.arborfamiliae.reports.BaseReport;
 import com.sjmeunier.arborfamiliae.reports.DescendantReport;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.app.Activity.RESULT_OK;
 
 public class ReportsFragment extends Fragment{
 
@@ -60,7 +45,8 @@ public class ReportsFragment extends Fragment{
 
         Spinner reportTypeSpinner = (Spinner) view.findViewById(R.id.report_type);
         List<String> list = new ArrayList<String>();
-        list.add("Ancestry");
+        list.add("Ancestry - Summary");
+        list.add("Ancestry - Detailed");
         list.add("Descendant");
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(mainActivity,
                 android.R.layout.simple_spinner_item, list);
@@ -82,11 +68,13 @@ public class ReportsFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 GenerateReportAsyncTask generateReportAsyncTask = new GenerateReportAsyncTask(mainActivity);
-                ReportTypes reportType = ReportTypes.Ancestry;
+                ReportTypes reportType = ReportTypes.AncestrySummary;
 
                 Spinner reportTypeSpinner = mainActivity.findViewById(R.id.report_type);
                 if (reportTypeSpinner.getSelectedItem().equals("Descendant"))
                     reportType = ReportTypes.Decendant;
+                else if (reportTypeSpinner.getSelectedItem().equals("Ancestry - Detailed"))
+                    reportType = ReportTypes.AncestryDetailed;
 
                 EditText maximumGenerations = mainActivity.findViewById(R.id.maximum_generations);
 
@@ -103,6 +91,7 @@ public class ReportsFragment extends Fragment{
 
         return view;
     }
+
 
     private class GenerateReportAsyncTask extends AsyncTask<Integer, Integer, Boolean> {
         private MainActivity activity;
@@ -121,8 +110,10 @@ public class ReportsFragment extends Fragment{
                 BaseReport report = null;
                 if (reportType == ReportTypes.Decendant)
                     report = new DescendantReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                else if (reportType == ReportTypes.AncestryDetailed)
+                    report = new AncestryDetailedReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else
-                    report = new AncestryReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                    report = new AncestrySummaryReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
 
                 success = report.generateReport("report.txt", mainActivity.activeIndividual.individualId);
             } catch (Exception e) {
@@ -139,11 +130,11 @@ public class ReportsFragment extends Fragment{
                 File file = new File(activity.getFilesDir(), "report.txt");
                 Uri sharedFileUri = FileProvider.getUriForFile(activity, "com.sjmeunier.arborfamiliae.chartfileprovider", file);
                 Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setDataAndType(sharedFileUri, "text/plain");
+                intent.setType("text/plain");
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.putExtra(Intent.EXTRA_STREAM, sharedFileUri);
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{" "});
-                Intent chooser = Intent.createChooser(intent, activity.getResources().getText(R.string.dialog_share_chart_with));
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{""});
+                Intent chooser = Intent.createChooser(intent, activity.getResources().getText(R.string.dialog_share_report_with));
                 if (intent.resolveActivity(activity.getPackageManager()) != null) {
                     activity.startActivity(chooser);
                 }

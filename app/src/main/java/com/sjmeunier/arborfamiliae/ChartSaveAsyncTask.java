@@ -51,7 +51,7 @@ public class ChartSaveAsyncTask extends AsyncTask<Bitmap, Integer, File> {
         if (file != null) {
             Uri sharedFileUri = FileProvider.getUriForFile(context, "com.sjmeunier.arborfamiliae.chartfileprovider", file);
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setDataAndType(sharedFileUri, "image/png");
+            intent.setType("image/png");
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.putExtra(Intent.EXTRA_STREAM, sharedFileUri);
             intent.putExtra(Intent.EXTRA_EMAIL, new String[]{""});

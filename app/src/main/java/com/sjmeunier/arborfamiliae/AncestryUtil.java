@@ -191,10 +191,10 @@ public class AncestryUtil {
         return result;
     }
 
-    public static String getChildLine(Individual child, NameFormat nameFormat)
+    public static String getChildLine(Individual child, NameFormat nameFormat, boolean includeMarkup)
     {
-        String result = "&nbsp;&nbsp;- <b>" + generateName(child, nameFormat);
-        result += "</b> " + generateBirthDeathDate(child, true);
+        String result = ((includeMarkup) ? "&nbsp;&nbsp;" : "  ") + "- " + ((includeMarkup) ? "<b>" : "") + generateName(child, nameFormat);
+        result += ((includeMarkup) ? "</b>" : "") + " " + generateBirthDeathDate(child, true);
         return result;
     }
 
@@ -284,7 +284,7 @@ public class AncestryUtil {
         return result;
     }
 
-    public static int getGenerationNumberFromAhnenNumber(int ahnenNumber) {
+    public static int getGenerationNumberFromAhnenNumber(long ahnenNumber) {
         return (int)Math.floor(Math.log(ahnenNumber) / Math.log(2));
     }
 

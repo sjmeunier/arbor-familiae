@@ -105,6 +105,7 @@
     <string name="error_could_not_share_chart">Could not share chart.</string>
 
     <string name="dialog_share_chart_with">Share this chart with</string>
+    <string name="dialog_share_report_with">Share this report with</string>
 
     <string name="mail_feedback_title">Send Feedback</string>
     <string name="mail_feedback_email">sjmeunier@gmail.com</string>

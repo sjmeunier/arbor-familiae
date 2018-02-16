@@ -1,6 +1,7 @@
 package com.sjmeunier.arborfamiliae.data;
 
 public enum ReportTypes {
-    Ancestry,
+    AncestrySummary,
+    AncestryDetailed,
     Decendant
 }

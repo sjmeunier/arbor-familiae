@@ -132,4 +132,10 @@
     <string name="preferences_title_heatmap_events">Heatmap events</string>
     <string name="preferences_dialog_title_heatmap_events">Heatmap events</string>
 
+    <string name="report_ancestry_detailed">The detailed ancestry report gives detailed biographical information for all ancestors of the active individual, up to the specified number of generations</string>
+    <string name="report_ancestry_summary">The ancestry summary report gives a basic summary for all ancestors of the active individual, up to the specified number of generations</string>
+    <string name="report_descendant">The descendant report shows all descendants of the active individual, up to the specified number of generations</string>
+    <string name="report_mtdna">The mt-DNA report finds the oldest ancestor with the same mt-DNA as the active individual (the maternal lineage), and then generates all descendants of this individual which share the same mt-DNA, up to the specified number of generations</string>
+    <string name="report_ydna">The Y-DNA report finds the oldest ancestor with the same Y-DNA as the active individual (the paternal lineage), and then generates all descendants of this individual which share the same Y-DNA, up to the specified number of generations</string>
+
 </resources>

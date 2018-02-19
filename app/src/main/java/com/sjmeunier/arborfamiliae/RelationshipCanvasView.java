@@ -138,7 +138,7 @@ public class RelationshipCanvasView extends View {
         this.individualBoxes = new ArrayList<>();
         drawSpouse = false;
 
-        if (rootLineage.size() == 0 || targetLineage.size() == 0) {
+        if (rootLineage == null || targetLineage == null || rootLineage.size() == 0 || targetLineage.size() == 0) {
             this.messageLine1 = "Individuals cannot be found";
         } else {
             if (rootLineage.size() == 1 && targetLineage.size() == 1) {

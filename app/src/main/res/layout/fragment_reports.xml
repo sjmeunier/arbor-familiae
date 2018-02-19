@@ -36,4 +36,10 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/button"
         android:text="@string/button_generate_report" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:id="@+id/report_description"
+        android:text="" />
 </LinearLayout>

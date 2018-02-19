@@ -12,19 +12,23 @@ import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
-import com.sjmeunier.arborfamiliae.data.ReportTypes;
+import com.sjmeunier.arborfamiliae.reports.MtDNAReport;
+import com.sjmeunier.arborfamiliae.reports.ReportTypes;
 import com.sjmeunier.arborfamiliae.reports.AncestryDetailedReport;
 import com.sjmeunier.arborfamiliae.reports.AncestrySummaryReport;
 import com.sjmeunier.arborfamiliae.reports.BaseReport;
 import com.sjmeunier.arborfamiliae.reports.DescendantReport;
+import com.sjmeunier.arborfamiliae.reports.YDNAReport;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,6 +52,8 @@ public class ReportsFragment extends Fragment{
         list.add("Ancestry - Summary");
         list.add("Ancestry - Detailed");
         list.add("Descendant");
+        list.add("Y-DNA");
+        list.add("mt-DNA");
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(mainActivity,
                 android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -63,6 +69,27 @@ public class ReportsFragment extends Fragment{
 
         }
 
+        reportTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                TextView reportDescription = (TextView) mainActivity.findViewById(R.id.report_description);
+                if (reportDescription == null)
+                    return;
+                if (adapterView.getSelectedItem().equals("Descendant"))
+                    reportDescription.setText(mainActivity.getResources().getText(R.string.report_descendant));
+                else if (adapterView.getSelectedItem().equals("Ancestry - Detailed"))
+                    reportDescription.setText(mainActivity.getResources().getText(R.string.report_ancestry_detailed));
+                else if (adapterView.getSelectedItem().equals("Y-DNA"))
+                    reportDescription.setText(mainActivity.getResources().getText(R.string.report_ydna));
+                else if (adapterView.getSelectedItem().equals("mt-DNA"))
+                    reportDescription.setText(mainActivity.getResources().getText(R.string.report_mtdna));
+                else
+                    reportDescription.setText(mainActivity.getResources().getText(R.string.report_ancestry_summary));
+            }
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
         final Button generateButton = (Button) view.findViewById(R.id.button_generate_report);
         generateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +102,10 @@ public class ReportsFragment extends Fragment{
                     reportType = ReportTypes.Decendant;
                 else if (reportTypeSpinner.getSelectedItem().equals("Ancestry - Detailed"))
                     reportType = ReportTypes.AncestryDetailed;
+                else if (reportTypeSpinner.getSelectedItem().equals("Y-DNA"))
+                    reportType = ReportTypes.YDNA;
+                else if (reportTypeSpinner.getSelectedItem().equals("mt-DNA"))
+                    reportType = ReportTypes.MtDNA;
 
                 EditText maximumGenerations = mainActivity.findViewById(R.id.maximum_generations);
 
@@ -84,7 +115,11 @@ public class ReportsFragment extends Fragment{
                 editor.putInt("reports_type", reportTypeSpinner.getSelectedItemPosition());
                 editor.commit();
 
-                generateReportAsyncTask.execute(reportType.ordinal(), Integer.parseInt(maximumGenerations.getText().toString()));
+                try {
+                    generateReportAsyncTask.execute(reportType.ordinal(), Integer.parseInt(maximumGenerations.getText().toString()));
+                } catch(Exception e) {
+                    Toast.makeText(mainActivity, "Unable to parse maximum generations", Toast.LENGTH_SHORT);
+                }
            }
         });
         setHasOptionsMenu(false);
@@ -112,6 +147,10 @@ public class ReportsFragment extends Fragment{
                     report = new DescendantReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else if (reportType == ReportTypes.AncestryDetailed)
                     report = new AncestryDetailedReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                else if (reportType == ReportTypes.YDNA)
+                    report = new YDNAReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                else if (reportType == ReportTypes.MtDNA)
+                    report = new MtDNAReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else
                     report = new AncestrySummaryReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
 

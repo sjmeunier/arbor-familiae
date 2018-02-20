@@ -22,7 +22,9 @@ import android.widget.Toast;
 
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
+import com.sjmeunier.arborfamiliae.reports.LifespanReport;
 import com.sjmeunier.arborfamiliae.reports.MtDNAReport;
+import com.sjmeunier.arborfamiliae.reports.PlacesReport;
 import com.sjmeunier.arborfamiliae.reports.ReportTypes;
 import com.sjmeunier.arborfamiliae.reports.AncestryDetailedReport;
 import com.sjmeunier.arborfamiliae.reports.AncestrySummaryReport;
@@ -54,6 +56,8 @@ public class ReportsFragment extends Fragment{
         list.add("Descendant");
         list.add("Y-DNA");
         list.add("mt-DNA");
+        list.add("Lifespan");
+        list.add("Places");
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(mainActivity,
                 android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -82,6 +86,10 @@ public class ReportsFragment extends Fragment{
                     reportDescription.setText(mainActivity.getResources().getText(R.string.report_ydna));
                 else if (adapterView.getSelectedItem().equals("mt-DNA"))
                     reportDescription.setText(mainActivity.getResources().getText(R.string.report_mtdna));
+                else if (adapterView.getSelectedItem().equals("Lifespan"))
+                    reportDescription.setText(mainActivity.getResources().getText(R.string.report_lifespan));
+                else if (adapterView.getSelectedItem().equals("Places"))
+                    reportDescription.setText(mainActivity.getResources().getText(R.string.report_places));
                 else
                     reportDescription.setText(mainActivity.getResources().getText(R.string.report_ancestry_summary));
             }
@@ -106,6 +114,10 @@ public class ReportsFragment extends Fragment{
                     reportType = ReportTypes.YDNA;
                 else if (reportTypeSpinner.getSelectedItem().equals("mt-DNA"))
                     reportType = ReportTypes.MtDNA;
+                else if (reportTypeSpinner.getSelectedItem().equals("Lifespan"))
+                    reportType = ReportTypes.Lifespan;
+                else if (reportTypeSpinner.getSelectedItem().equals("Places"))
+                    reportType = ReportTypes.Places;
 
                 EditText maximumGenerations = mainActivity.findViewById(R.id.maximum_generations);
 
@@ -151,6 +163,10 @@ public class ReportsFragment extends Fragment{
                     report = new YDNAReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else if (reportType == ReportTypes.MtDNA)
                     report = new MtDNAReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                else if (reportType == ReportTypes.Lifespan)
+                    report = new LifespanReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                else if (reportType == ReportTypes.Places)
+                    report = new PlacesReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else
                     report = new AncestrySummaryReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
 

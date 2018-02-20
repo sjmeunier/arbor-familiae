@@ -6,6 +6,6 @@ public enum ReportTypes {
     Decendant,
     YDNA,
     MtDNA,
-    Location,
+    Places,
     Lifespan
 }

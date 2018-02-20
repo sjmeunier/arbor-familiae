@@ -12,6 +12,8 @@ import org.w3c.dom.Text;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.System.out;
+
 public class AncestryUtil {
     public static String calculateRelationship(int generations, boolean isMale)
     {
@@ -393,5 +395,64 @@ public class AncestryUtil {
         }
 
         return relationship;
+    }
+
+    public static float calculateAge(Individual individual)
+    {
+        float birthYear = getYearFromDate(individual.birthDate);
+        float deathYear = getYearFromDate(individual.diedDate);
+        if (birthYear == -1 || deathYear == -1)
+            return -1;
+        return deathYear - birthYear;
+    }
+
+    private static float getYearFromDate(String date)
+    {
+        if (TextUtils.isEmpty(date))
+            return -1;
+
+        if (date.toUpperCase().contains("AFT") || date.toUpperCase().contains("BEF"))
+            return -1;
+
+        String[] dateArr = date.split(" ");
+        float year = 0;
+        try {
+            year = Float.parseFloat(dateArr[dateArr.length - 1]);
+        } catch (Exception e) {};
+
+        if (year == 0)
+            return -1;
+
+        float month = 0;
+
+        date = date.toUpperCase();
+        if (date.contains("JAN"))
+            month = 1;
+        else if (date.contains("FEB"))
+            month = 2;
+        else if (date.contains("MAR"))
+            month = 3;
+        else if (date.contains("APR"))
+            month = 4;
+        else if (date.contains("MAY"))
+            month = 5;
+        else if (date.contains("JUN"))
+            month = 6;
+        else if (date.contains("JUL"))
+            month = 7;
+        else if (date.contains("AUG"))
+            month = 8;
+        else if (date.contains("SEP"))
+            month = 9;
+        else if (date.contains("OCT"))
+            month = 10;
+        else if (date.contains("NOV"))
+            month = 11;
+        else if (date.contains("DEC"))
+            month = 12;
+
+        year = year + (month / 12.0f);
+
+        return year;
     }
 }

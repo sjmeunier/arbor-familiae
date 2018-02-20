@@ -81,6 +81,8 @@ public class AncestrySummaryReport extends BaseReport {
             ancestorIdsAhnenNumbers.put(individualId, ahnenNumber);
             ahnenNumbersAncestorId.put(ahnenNumber, individualId);
             ahnenNumbers.add(ahnenNumber);
+        } else {
+            return;
         }
 
         if (generation < this.maxGenerations) {

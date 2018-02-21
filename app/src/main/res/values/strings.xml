@@ -12,7 +12,7 @@
     <string name="about_fanchart_description">The fan chart shows the ancestors or descendants of the active individual in a fan chart. Clicking on the centre of the chart switches between ancestor/descendant view. Long clicking on the individuals sets that individual as the root.</string>
 
     <string name="about_heatmap_header">Heatmap</string>
-    <string name="about_heatmap_description">The heatmap shows the locations on a map related to the active individual</string>
+    <string name="about_heatmap_description">The heatmap shows the locations on a map for events of ancestors related to the active individual. In order for the heatmap to show locations, the places listed for the events in the imported GEDCOM need to have associated longitude and latitude coordinates.</string>
 
     <string name="about_tree_header">Tree Chart</string>
     <string name="about_tree_description">The tree view shows the relationships of the active individual in a tree structure. Clicking on individuals sets that individual to the root of the tree.</string>

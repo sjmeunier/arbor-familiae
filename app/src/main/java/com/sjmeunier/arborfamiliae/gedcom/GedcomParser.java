@@ -79,6 +79,7 @@ public class GedcomParser {
 
     public long bytesRead = 0;
 
+    private int currentEmbeddedNoteId = 10000000;
 
 
 
@@ -97,16 +98,25 @@ public class GedcomParser {
         value = value.replaceAll("[\\D]", "");
         if (TextUtils.isEmpty(value))
             return -1;
-        return Integer.parseInt(value);
+        int val = -1;
+        try {
+            val = Integer.parseInt(value);
+        } catch (Exception e) {
+            // Number not in correct format so returning -1
+        }
+        return val;
     }
 
     public int parseGedcom(Context context, Uri uri) throws IOException, NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException {
         FileDetail fileDetail = FileUtils.getFileDetailFromUri(context, uri);
 
-        Log.d("ARBORFAMILIAE", "uri :-" + uri.getPath());
-        Log.d("ARBORFAMILIAE", "uri to string :-" + uri.toString());
-        Log.d("ARBORFAMILIAE", "uri scheme :-" + uri.getScheme());
-        tree = new Tree(fileDetail.fileName.substring(fileDetail.fileName.lastIndexOf("/") + 1), new Date(System.currentTimeMillis()));
+        String fileName = "";
+        if (fileDetail.fileName != null) {
+            fileName = fileDetail.fileName.substring(fileDetail.fileName.lastIndexOf("/") + 1);
+        } else {
+            fileName = uri.getLastPathSegment();
+        }
+        tree = new Tree(fileName, new Date(System.currentTimeMillis()));
         tree.id = (int)database.treeDao().addTree(tree);
         treeId = tree.id;
 
@@ -119,7 +129,7 @@ public class GedcomParser {
         } else {
             inputStream = contentResolver.openInputStream(uri);
         }
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
         String line;
         Log.d("ARBORFAMILIAE", "starting reading");
@@ -266,14 +276,14 @@ public class GedcomParser {
                 break;
         }
 
-        if (lineArray[1].equals("HEAD"))
+        if (lineArray[1].toUpperCase().equals("HEAD"))
         {
             currentRecord = GedcomRecordEnum.Header;
             currentSubRecord = GedcomSubRecordEnum.None;
         } else if (lineArray[1].indexOf("@") >= 0) {
             String val = lineArray[2];
             if (val.length() > 4)
-                val = val.substring(0, 4);
+                val = val.substring(0, 4).toUpperCase();
             switch (val)
             {
                 case "INDI":
@@ -322,9 +332,24 @@ public class GedcomParser {
     }
     public void ProcessLevel1(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException
     {
+        switch (currentSubRecord)
+        {
+            case EmbeddedNote:
+                notes.add(currentGedcomNote);
+                noteCount++;
+                if (noteCount % 1000 == 0) {
+                    database.noteDao().addNotes(notes.toArray(new Note[0]));
+                    tree.noteCount = noteCount;
+                    database.treeDao().updateTree(tree);
+                    notes.clear();
+                }
+                break;
+        }
+
+
         if (currentRecord == GedcomRecordEnum.Header)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "SOUR":
                     gedcomHeader.Source = lineArray[2];
@@ -353,7 +378,7 @@ public class GedcomParser {
         }
         else if (currentRecord == GedcomRecordEnum.Individual)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "NAME":
                     currentSubRecord = GedcomSubRecordEnum.IndividualName;
@@ -411,11 +436,26 @@ public class GedcomParser {
                     currentSubRecord = GedcomSubRecordEnum.None;
                     break;
                 case "NOTE":
-                    int id = convertStringToInt(lineArray[2]);
+                    int id = -1;
+
+                    if (lineArray.length > 2)
+                        id = convertStringToInt(lineArray[2]);
                     if (id != -1) {
                         individualNotes.add(new IndividualNote(treeId, currentGedcomIndividual.individualId, id));
+                        currentSubRecord = GedcomSubRecordEnum.None;
+                    } else {
+                        if (lineArray.length > 2) {
+                            currentEmbeddedNoteId++;
+                            individualNotes.add(new IndividualNote(treeId, currentGedcomIndividual.individualId, currentEmbeddedNoteId));
+                            currentGedcomNote = new Note(currentEmbeddedNoteId, treeId);
+
+                            currentGedcomNote.text = lineArray[2];
+                            currentSubRecord = GedcomSubRecordEnum.EmbeddedNote;
+                        } else {
+                            currentSubRecord = GedcomSubRecordEnum.None;
+                        }
                     }
-                    currentSubRecord = GedcomSubRecordEnum.None;
+
                     break;
                 case "SOUR":
                     id = convertStringToInt(lineArray[2]);
@@ -431,7 +471,7 @@ public class GedcomParser {
         }
         else if (currentRecord == GedcomRecordEnum.Family)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "HUSB":
                     currentGedcomFamily.husbandId = convertStringToInt(lineArray[2]);
@@ -449,11 +489,26 @@ public class GedcomParser {
                     currentSubRecord = GedcomSubRecordEnum.FamilyMarriage;
                     break;
                 case "NOTE":
-                    int id = convertStringToInt(lineArray[2]);
+                    int id = -1;
+
+                    if (lineArray.length > 2)
+                        id = convertStringToInt(lineArray[2]);
                     if (id != -1) {
                         familyNotes.add(new FamilyNote(treeId, currentGedcomFamily.familyId, id));
+                        currentSubRecord = GedcomSubRecordEnum.None;
+                    } else {
+                        if (lineArray.length > 2) {
+                            currentEmbeddedNoteId++;
+                            familyNotes.add(new FamilyNote(treeId, currentGedcomFamily.familyId, currentEmbeddedNoteId));
+                            currentGedcomNote = new Note(currentEmbeddedNoteId, treeId);
+
+                            currentGedcomNote.text = lineArray[2];
+                            currentSubRecord = GedcomSubRecordEnum.EmbeddedNote;
+                        } else {
+                            currentSubRecord = GedcomSubRecordEnum.None;
+                        }
                     }
-                    currentSubRecord = GedcomSubRecordEnum.None;
+
                     break;
                 case "SOUR":
                     id = convertStringToInt(lineArray[2]);
@@ -469,7 +524,7 @@ public class GedcomParser {
         }
         else if (currentRecord == GedcomRecordEnum.Note)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "CONC":
                     if (lineArray.length > 2 && !TextUtils.isEmpty(lineArray[2]))
@@ -488,7 +543,7 @@ public class GedcomParser {
         }
         else if (currentRecord == GedcomRecordEnum.Source)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "TITL":
                     currentGedcomSource.text = lineArray[2];
@@ -513,7 +568,7 @@ public class GedcomParser {
     {
         if (currentSubRecord == GedcomSubRecordEnum.HeaderSource)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "VERS":
                     gedcomHeader.SourceVersion = lineArray[2];
@@ -528,7 +583,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.HeaderGedcom)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "VERS":
                     gedcomHeader.GedcomVersion = lineArray[2];
@@ -540,7 +595,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.IndividualName)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "GIVN":
                     if (!alreadyFoundName)
@@ -566,7 +621,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.IndividualBirth)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "DATE":
                     currentGedcomIndividual.birthDate = lineArray[2];
@@ -592,7 +647,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.IndividualDeath)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "DATE":
                     currentGedcomIndividual.diedDate = lineArray[2];
@@ -621,7 +676,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.IndividualBaptism)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "DATE":
                     currentGedcomIndividual.baptismDate = lineArray[2];
@@ -647,7 +702,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.IndividualBurial)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "DATE":
                     currentGedcomIndividual.burialDate = lineArray[2];
@@ -673,7 +728,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.FamilyMarriage)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "DATE":
                     currentGedcomFamily.marriageDate = lineArray[2];
@@ -697,13 +752,29 @@ public class GedcomParser {
                     break;
             }
         }
+        else if (currentSubRecord == GedcomSubRecordEnum.EmbeddedNote)
+        {
+            switch (lineArray[1].toUpperCase())
+            {
+                case "CONC":
+                    if (lineArray.length > 2 && !TextUtils.isEmpty(lineArray[2]))
+                        currentGedcomNote.text += lineArray[2];
+                    break;
+                case "CONT":
+                    if (lineArray.length > 2 && !TextUtils.isEmpty(lineArray[2]))
+                        currentGedcomNote.text += "\r\n" + lineArray[2];
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public void ProcessLevel3(String[] lineArray) throws NumberFormatException, ArrayIndexOutOfBoundsException, ClassCastException
     {
         if (currentSubRecord == GedcomSubRecordEnum.IndividualBirth)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "MAP":
                     currentSubSubRecord = GedcomSubSubRecordEnum.IndividualBirthMap;
@@ -712,7 +783,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.IndividualDeath)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "MAP":
                     currentSubSubRecord = GedcomSubSubRecordEnum.IndividualDeathMap;
@@ -721,7 +792,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.IndividualBaptism)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "MAP":
                     currentSubSubRecord = GedcomSubSubRecordEnum.IndividualBaptismMap;
@@ -730,7 +801,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.IndividualBurial)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "MAP":
                     currentSubSubRecord = GedcomSubSubRecordEnum.IndividualBurialMap;
@@ -739,7 +810,7 @@ public class GedcomParser {
         }
         else if (currentSubRecord == GedcomSubRecordEnum.FamilyMarriage)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "MAP":
                     currentSubSubRecord = GedcomSubSubRecordEnum.FamilyMarriageMap;
@@ -752,7 +823,7 @@ public class GedcomParser {
     {
         if (currentSubSubRecord == GedcomSubSubRecordEnum.IndividualBirthMap)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "LATI":
                     if (currentPlace != null) {
@@ -768,7 +839,7 @@ public class GedcomParser {
         }
         else if (currentSubSubRecord == GedcomSubSubRecordEnum.IndividualDeathMap)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "LATI":
                     if (currentPlace != null) {
@@ -784,7 +855,7 @@ public class GedcomParser {
         }
         else if (currentSubSubRecord == GedcomSubSubRecordEnum.IndividualBaptismMap)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "LATI":
                     if (currentPlace != null) {
@@ -800,7 +871,7 @@ public class GedcomParser {
         }
         else if (currentSubSubRecord == GedcomSubSubRecordEnum.IndividualBurialMap)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "LATI":
                     if (currentPlace != null) {
@@ -816,7 +887,7 @@ public class GedcomParser {
         }
         else if (currentSubSubRecord == GedcomSubSubRecordEnum.FamilyMarriageMap)
         {
-            switch (lineArray[1])
+            switch (lineArray[1].toUpperCase())
             {
                 case "LATI":
                     if (currentPlace != null) {

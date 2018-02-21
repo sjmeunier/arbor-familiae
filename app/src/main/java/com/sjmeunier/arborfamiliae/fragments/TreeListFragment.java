@@ -177,9 +177,10 @@ public class TreeListFragment extends Fragment{
                 GedcomParser parser = new GedcomParser(database, context.getContentResolver());
                 treeId = parser.parseGedcom(context, gedcomResource);
                 message = "Finished importing tree";
-            } catch (Exception ex) {
+             } catch (Exception ex) {
+                ex.printStackTrace();
                 message = "Unable to import tree";
-            }
+             }
 
             return message;
         }

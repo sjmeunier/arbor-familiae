@@ -11,5 +11,6 @@ public enum GedcomSubRecordEnum
     IndividualBaptism,
     IndividualBurial,
     FamilyChildren,
-    FamilyMarriage
+    FamilyMarriage,
+    EmbeddedNote
 }

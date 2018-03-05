@@ -1,4 +1,4 @@
-package com.sjmeunier.arborfamiliae;
+package com.sjmeunier.arborfamiliae.charts;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.data.RelationshipChartIndividual;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;

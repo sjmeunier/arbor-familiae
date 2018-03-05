@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     android:background="@android:color/transparent"
     android:weightSum="1">
-    <com.sjmeunier.arborfamiliae.FanchartCanvasView
+    <com.sjmeunier.arborfamiliae.charts.FanchartCanvasView
         android:id="@+id/fanchart_canvas"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.sjmeunier.arborfamiliae.IndividualListAdapter;
+import com.sjmeunier.arborfamiliae.individuallist.IndividualListAdapter;
 import com.sjmeunier.arborfamiliae.MainActivity;
-import com.sjmeunier.arborfamiliae.OnIndividualListViewClickListener;
+import com.sjmeunier.arborfamiliae.individuallist.OnIndividualListViewClickListener;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.Individual;

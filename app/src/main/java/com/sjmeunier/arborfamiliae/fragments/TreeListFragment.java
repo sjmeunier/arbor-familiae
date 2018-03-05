@@ -10,27 +10,24 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sjmeunier.arborfamiliae.MainActivity;
-import com.sjmeunier.arborfamiliae.OnTreeListViewClickListener;
-import com.sjmeunier.arborfamiliae.OnTreeListViewDeleteListener;
-import com.sjmeunier.arborfamiliae.OnTreeListViewLongPressListener;
+import com.sjmeunier.arborfamiliae.treelist.OnTreeListViewClickListener;
+import com.sjmeunier.arborfamiliae.treelist.OnTreeListViewDeleteListener;
+import com.sjmeunier.arborfamiliae.treelist.OnTreeListViewLongPressListener;
 import com.sjmeunier.arborfamiliae.R;
-import com.sjmeunier.arborfamiliae.TreeListAdapter;
+import com.sjmeunier.arborfamiliae.treelist.TreeListAdapter;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Tree;
 import com.sjmeunier.arborfamiliae.gedcom.GedcomParser;
 
-import java.io.IOException;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;

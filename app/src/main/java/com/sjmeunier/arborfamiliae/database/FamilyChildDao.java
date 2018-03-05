@@ -19,6 +19,9 @@ public interface FamilyChildDao {
     @Query("select * from family_child where treeId =:treeId and familyId = :familyId")
     public List<FamilyChild> getAllFamilyChildren(int treeId, int familyId);
 
+    @Query("select * from family_child where treeId =:treeId")
+    public List<FamilyChild> getAllFamilyChildrenForTree(int treeId);
+
     @Query("select individualId from family_child where treeId =:treeId and familyId = :familyId")
     public List<Integer> getAllFamilyChildrenIds(int treeId, int familyId);
 

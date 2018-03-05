@@ -1,4 +1,4 @@
-package com.sjmeunier.arborfamiliae;
+package com.sjmeunier.arborfamiliae.treelist;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.database.Tree;
 
 import java.util.List;

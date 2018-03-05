@@ -23,11 +23,14 @@ import android.widget.Toast;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
+import com.sjmeunier.arborfamiliae.database.FamilyChild;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.database.Place;
 import com.sjmeunier.arborfamiliae.database.Tree;
 import com.sjmeunier.arborfamiliae.fragments.*;
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     public HashMap<Integer, Place> placesInActiveTree;
     public HashMap<Integer, Individual> individualsInActiveTree;
     public HashMap<Integer, Family> familiesInActiveTree;
+    public List<FamilyChild> familyChildrenInActiveTree;
 
     public int rootIndividualId;
 
@@ -60,6 +64,11 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         database = AppDatabase.getDatabase(getApplicationContext());
+
+        placesInActiveTree = new HashMap<>();
+        individualsInActiveTree = new HashMap<>();
+        familiesInActiveTree = new HashMap();
+        familyChildrenInActiveTree = new ArrayList<>();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -379,6 +388,8 @@ public class MainActivity extends AppCompatActivity
                     familiesInActiveTree.put(family.familyId, family);
                 }
                 families = null;
+
+                familyChildrenInActiveTree = database.familyChildDao().getAllFamilyChildrenForTree(treeId);
 
                 //Load recent list
                 String recentIds = settings.getString("recentIndividuals_" + String.valueOf(activeTree.id), "");

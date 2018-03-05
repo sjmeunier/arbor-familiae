@@ -5,6 +5,7 @@ import android.content.Context;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
+import com.sjmeunier.arborfamiliae.database.FamilyChild;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.database.Place;
 
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.List;
 import java.util.Map;
 
 public class BaseReport {
@@ -20,6 +22,7 @@ public class BaseReport {
     protected Map<Integer, Place> placesInActiveTree;
     protected Map<Integer, Individual> individualsInActiveTree;
     protected Map<Integer, Family> familiesInActiveTree;
+    protected List<FamilyChild> familyChildrenInActiveTree;
     protected NameFormat nameFormat;
     protected int maxGenerations;
     protected int treeId;
@@ -27,12 +30,13 @@ public class BaseReport {
     protected FileOutputStream fout;
     protected File file;
 
-    public BaseReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
+    public BaseReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
         this.context = context;
         this.database = database;
         this.placesInActiveTree = placesInActiveTree;
         this.individualsInActiveTree = individualsInActiveTree;
         this.familiesInActiveTree = familiesInActiveTree;
+        this.familyChildrenInActiveTree = familyChildrenInActiveTree;
         this.nameFormat = nameFormat;
         this.maxGenerations = maxGenerations;
         this.treeId = treeId;

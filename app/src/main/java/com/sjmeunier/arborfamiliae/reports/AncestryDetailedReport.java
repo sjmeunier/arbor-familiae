@@ -3,14 +3,14 @@ package com.sjmeunier.arborfamiliae.reports;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.sjmeunier.arborfamiliae.AncestryUtil;
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.FamilyChild;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.database.Place;
-import com.sjmeunier.arborfamiliae.util.Utility;
+import com.sjmeunier.arborfamiliae.util.ListSearchUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -27,8 +27,8 @@ public class AncestryDetailedReport extends BaseReport {
     private Map<Integer, Long> ancestorIdsAhnenNumbers;
     private List<Long> ahnenNumbers;
 
-    public AncestryDetailedReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
-        super(context, database, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, nameFormat, maxGenerations, treeId);
+    public AncestryDetailedReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
+        super(context, database, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, familyChildrenInActiveTree, nameFormat, maxGenerations, treeId);
     }
 
     @Override
@@ -101,7 +101,6 @@ public class AncestryDetailedReport extends BaseReport {
             this.writeLine("");
 
             //Parents
-            List<FamilyChild> parentFamilies =  this.database.familyChildDao().getAllFamiliesWithChild(individual.treeId, individual.individualId);
             boolean anyParent = false;
             if (individual.parentFamilyId != -1 && this.familiesInActiveTree.containsKey(individual.parentFamilyId)) {
                 Family family = this.familiesInActiveTree.get(individual.parentFamilyId);
@@ -130,7 +129,7 @@ public class AncestryDetailedReport extends BaseReport {
             }
 
             //Marriages
-            List<Family> marriages = this.database.familyDao().getAllFamiliesForHusbandOrWife(individual.treeId, individual.individualId);
+            List<Family> marriages = ListSearchUtils.findFamiliesForWifeOrHusband(individual.individualId, this.familiesInActiveTree);
             for(int i = 0; i < marriages.size(); i++) {
                 if ( i > 0) {
                     this.writeLine("");
@@ -154,7 +153,7 @@ public class AncestryDetailedReport extends BaseReport {
                     }
                 }
 
-                List<FamilyChild> familyChildren = this.database.familyChildDao().getAllFamilyChildren(individual.treeId, marriage.familyId);
+                List<FamilyChild> familyChildren = ListSearchUtils.findChildrenForFamily(marriage.familyId, this.familyChildrenInActiveTree);
                 int[] childIds = new int[familyChildren.size()];
                 for(int j = 0; j < familyChildren.size(); j++) {
                     childIds[j] = familyChildren.get(j).individualId;

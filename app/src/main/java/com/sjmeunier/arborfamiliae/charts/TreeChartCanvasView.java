@@ -1,12 +1,10 @@
-package com.sjmeunier.arborfamiliae;
+package com.sjmeunier.arborfamiliae.charts;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PathMeasure;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -14,16 +12,18 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
+import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.data.FamilyIndividuals;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.data.TreeChartFamily;
 import com.sjmeunier.arborfamiliae.data.TreeChartIndividual;
 import com.sjmeunier.arborfamiliae.data.TreeChartIndividualType;
-import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.FamilyChild;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import com.sjmeunier.arborfamiliae.database.Individual;
+import com.sjmeunier.arborfamiliae.util.ListSearchUtils;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.jar.Attributes;
 
 public class TreeChartCanvasView extends View {
 
@@ -44,13 +43,11 @@ public class TreeChartCanvasView extends View {
     private boolean isConfigured = false;
     private Map<Integer, Individual> allIndividualsInTree;
     private Map<Integer, Family> allFamiliesInTree;
+    private List<FamilyChild> allFamilyChildrenInTree;
+
     private Individual rootIndividual;
     private int generations;
     private NameFormat nameFormat;
-
-    private int treeId = 0;
-
-    private AppDatabase database;
 
     Context context;
     private Paint linePaint;
@@ -140,14 +137,13 @@ public class TreeChartCanvasView extends View {
     }
 
 
-    public void configureChart(Individual rootIndividual, Map<Integer, Individual> allIndividualsInTree, Map<Integer, Family> allFamiliesInTree, AppDatabase database, int treeId, MainActivity mainActivity, int generations, NameFormat nameFormat)
+    public void configureChart(Individual rootIndividual, Map<Integer, Individual> allIndividualsInTree, Map<Integer, Family> allFamiliesInTree, List<FamilyChild> allFamilyChildrenInTree, MainActivity mainActivity, int generations, NameFormat nameFormat)
     {
         this.isConfigured = false;
         this.isLoaded = false;
         this.allIndividualsInTree = allIndividualsInTree;
         this.allFamiliesInTree = allFamiliesInTree;
-        this.treeId = treeId;
-        this.database = database;
+        this.allFamilyChildrenInTree = allFamilyChildrenInTree;
         this.mainActivity = mainActivity;
         this.generations = generations;
         this.nameFormat = nameFormat;
@@ -348,7 +344,7 @@ public class TreeChartCanvasView extends View {
         //Find families root individual
         List<FamilyIndividuals> familiesWithIndividuals = new ArrayList<>();
 
-        List<Family> families = mainActivity.database.familyDao().getAllFamiliesForHusbandOrWife(treeId, mainActivity.activeIndividual.individualId);
+        List<Family> families = ListSearchUtils.findFamiliesForWifeOrHusband(mainActivity.activeIndividual.individualId, this.allFamiliesInTree);
         for(Family family : families) {
             FamilyIndividuals familyIndividuals = new FamilyIndividuals();
             if (family.husbandId == this.rootIndividual.individualId && family.wifeId != -1) {
@@ -362,7 +358,7 @@ public class TreeChartCanvasView extends View {
                 }
             }
 
-            List<FamilyChild> familyChildren = mainActivity.database.familyChildDao().getAllFamilyChildren(treeId, family.familyId);
+            List<FamilyChild> familyChildren = ListSearchUtils.findChildrenForFamily(family.familyId, this.allFamilyChildrenInTree);
             for(FamilyChild child : familyChildren) {
                 if (this.allIndividualsInTree.containsKey(child.individualId)) {
                     familyIndividuals.children.add(this.allIndividualsInTree.get(child.individualId));

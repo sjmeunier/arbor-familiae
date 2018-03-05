@@ -1,19 +1,17 @@
-package com.sjmeunier.arborfamiliae;
+package com.sjmeunier.arborfamiliae.individuallist;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.Individual;
-import com.sjmeunier.arborfamiliae.database.Tree;
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 
 import java.util.List;
 

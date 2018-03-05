@@ -2,7 +2,8 @@ package com.sjmeunier.arborfamiliae.reports;
 
 import android.content.Context;
 
-import com.sjmeunier.arborfamiliae.AncestryUtil;
+import com.sjmeunier.arborfamiliae.database.FamilyChild;
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +38,8 @@ public class LifespanReport extends BaseReport {
 
     private List<DemographicLifespan> demographicLifespans = new ArrayList<>();
 
-    public LifespanReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
-        super(context, database, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, nameFormat, maxGenerations, treeId);
+    public LifespanReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
+        super(context, database, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, familyChildrenInActiveTree, nameFormat, maxGenerations, treeId);
     }
 
     @Override

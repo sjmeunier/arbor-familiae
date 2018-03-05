@@ -14,24 +14,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
-import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.sjmeunier.arborfamiliae.AncestryUtil;
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.data.Events;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
-import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.database.Place;
-import com.sjmeunier.arborfamiliae.util.Utility;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,8 +40,6 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
     private HeatmapTileProvider mProvider;
     private TileOverlay mOverlay;
     private List<LatLng> locations;
-    private AppDatabase database;
-    private int treeId;
     private LatLng rootLocation;
     private int maxGeneration;
     private Events events;
@@ -146,9 +139,6 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
 
         if (mainActivity.activeIndividual == null || mainActivity.activeTree == null)
             return;
-
-        database = AppDatabase.getDatabase(mainActivity);
-        treeId = mainActivity.activeTree.id;
 
         individuals = new HashMap<Integer, Individual>();
 

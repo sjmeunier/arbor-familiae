@@ -7,5 +7,6 @@ public enum ReportTypes {
     YDNA,
     MtDNA,
     Places,
-    Lifespan
+    Lifespan,
+    Countries
 }

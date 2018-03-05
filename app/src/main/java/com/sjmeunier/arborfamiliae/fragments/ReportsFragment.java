@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
+import com.sjmeunier.arborfamiliae.reports.CountriesReport;
 import com.sjmeunier.arborfamiliae.reports.LifespanReport;
 import com.sjmeunier.arborfamiliae.reports.MtDNAReport;
 import com.sjmeunier.arborfamiliae.reports.PlacesReport;
@@ -58,6 +59,8 @@ public class ReportsFragment extends Fragment{
         list.add("mt-DNA");
         list.add("Lifespan");
         list.add("Places");
+        list.add("Countries");
+
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(mainActivity,
                 android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -90,6 +93,8 @@ public class ReportsFragment extends Fragment{
                     reportDescription.setText(mainActivity.getResources().getText(R.string.report_lifespan));
                 else if (adapterView.getSelectedItem().equals("Places"))
                     reportDescription.setText(mainActivity.getResources().getText(R.string.report_places));
+                else if (adapterView.getSelectedItem().equals("Countries"))
+                    reportDescription.setText(mainActivity.getResources().getText(R.string.report_countries));
                 else
                     reportDescription.setText(mainActivity.getResources().getText(R.string.report_ancestry_summary));
             }
@@ -118,6 +123,8 @@ public class ReportsFragment extends Fragment{
                     reportType = ReportTypes.Lifespan;
                 else if (reportTypeSpinner.getSelectedItem().equals("Places"))
                     reportType = ReportTypes.Places;
+                else if (reportTypeSpinner.getSelectedItem().equals("Countries"))
+                    reportType = ReportTypes.Countries;
 
                 EditText maximumGenerations = mainActivity.findViewById(R.id.maximum_generations);
 
@@ -156,19 +163,21 @@ public class ReportsFragment extends Fragment{
             try {
                 BaseReport report = null;
                 if (reportType == ReportTypes.Decendant)
-                    report = new DescendantReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                    report = new DescendantReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else if (reportType == ReportTypes.AncestryDetailed)
-                    report = new AncestryDetailedReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                    report = new AncestryDetailedReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else if (reportType == ReportTypes.YDNA)
-                    report = new YDNAReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                    report = new YDNAReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else if (reportType == ReportTypes.MtDNA)
-                    report = new MtDNAReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                    report = new MtDNAReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else if (reportType == ReportTypes.Lifespan)
-                    report = new LifespanReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                    report = new LifespanReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else if (reportType == ReportTypes.Places)
-                    report = new PlacesReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                    report = new PlacesReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                else if (reportType == ReportTypes.Countries)
+                    report = new CountriesReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
                 else
-                    report = new AncestrySummaryReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
+                    report = new AncestrySummaryReport(mainActivity, mainActivity.database, mainActivity.placesInActiveTree, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity.nameFormat, maximumGenerations, mainActivity.activeTree.id);
 
                 success = report.generateReport("report.txt", mainActivity.activeIndividual.individualId);
             } catch (Exception e) {

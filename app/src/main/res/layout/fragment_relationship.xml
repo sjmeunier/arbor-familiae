@@ -7,7 +7,7 @@
     android:background="@android:color/transparent"
     android:weightSum="1">
 
-    <com.sjmeunier.arborfamiliae.RelationshipCanvasView
+    <com.sjmeunier.arborfamiliae.charts.RelationshipCanvasView
         android:id="@+id/relationship_canvas"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -1,4 +1,4 @@
-package com.sjmeunier.arborfamiliae;
+package com.sjmeunier.arborfamiliae.charts;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.content.FileProvider;
 import android.widget.Toast;
+
+import com.sjmeunier.arborfamiliae.R;
 
 import java.io.File;
 import java.io.FileOutputStream;

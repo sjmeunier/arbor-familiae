@@ -2,7 +2,7 @@ package com.sjmeunier.arborfamiliae.reports;
 
 import android.content.Context;
 
-import com.sjmeunier.arborfamiliae.AncestryUtil;
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
@@ -10,6 +10,7 @@ import com.sjmeunier.arborfamiliae.database.FamilyChild;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.database.Place;
+import com.sjmeunier.arborfamiliae.util.ListSearchUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -19,8 +20,8 @@ import java.util.Map;
 
 public class YDNAReport extends BaseReport {
 
-    public YDNAReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
-        super(context, database, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, nameFormat, maxGenerations, treeId);
+    public YDNAReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
+        super(context, database, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, familyChildrenInActiveTree, nameFormat, maxGenerations, treeId);
     }
 
     @Override
@@ -61,11 +62,11 @@ public class YDNAReport extends BaseReport {
             return;
 
         this.writeLine(new String(new char[generation * 2]).replace('\0', ' ') + "- " + AncestryUtil.generateName(individual, this.nameFormat) + " " + AncestryUtil.generateBirthDeathDateWithPlace(individual, this.placesInActiveTree));
-        List<Family> families = database.familyDao().getAllFamiliesForHusbandOrWife(this.treeId, individualId);
+        List<Family> families = ListSearchUtils.findFamiliesForWifeOrHusband(individualId, this.familiesInActiveTree);
         for (Family family : families) {
             //Children
             if (generation < this.maxGenerations) {
-                List<FamilyChild> familyChildren = database.familyChildDao().getAllFamilyChildren(this.treeId, family.familyId);
+                List<FamilyChild> familyChildren = ListSearchUtils.findChildrenForFamily(family.familyId, this.familyChildrenInActiveTree);
                 for (FamilyChild familyChild : familyChildren) {
                     processPerson(familyChild.individualId, generation + 1);
                 }

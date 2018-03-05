@@ -3,34 +3,26 @@ package com.sjmeunier.arborfamiliae.fragments;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.sjmeunier.arborfamiliae.ChartSaveAsyncTask;
+import com.sjmeunier.arborfamiliae.charts.ChartSaveAsyncTask;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
-import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import com.sjmeunier.arborfamiliae.database.Individual;
-import com.sjmeunier.arborfamiliae.RelationshipCanvasView;
-import com.sjmeunier.arborfamiliae.util.FileUtils;
+import com.sjmeunier.arborfamiliae.charts.RelationshipCanvasView;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +34,6 @@ public class RelationshipFragment extends Fragment{
     private MainActivity mainActivity;
 
     private int maxGeneration = 0;
-    private AppDatabase database;
-    private int treeId = 0;
 
     private Map<Long, Individual> rootTree;
     private Map<Long, Individual> targetTree;
@@ -260,9 +250,6 @@ public class RelationshipFragment extends Fragment{
 
             if (mainActivity.activeIndividual == null || mainActivity.activeTree == null)
                 return false;
-
-            database = AppDatabase.getDatabase(mainActivity);
-            treeId = mainActivity.activeTree.id;
 
             SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
             nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];

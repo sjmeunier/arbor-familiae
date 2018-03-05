@@ -1,4 +1,4 @@
-package com.sjmeunier.arborfamiliae;
+package com.sjmeunier.arborfamiliae.charts;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,13 +14,15 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
+import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.data.FanChartIndividual;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
-import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.FamilyChild;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import com.sjmeunier.arborfamiliae.database.Individual;
+import com.sjmeunier.arborfamiliae.util.ListSearchUtils;
 
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -35,14 +37,13 @@ public class FanchartCanvasView extends View {
     private boolean isConfigured = false;
     private boolean showAncestors = true;
 
-    private int treeId = 0;
-
-    private AppDatabase database;
     private int generations = 1;
     private List<FanChartIndividual> individuals;
 
     private Map<Integer, Individual> allIndividualsInTree;
     private Map<Integer, Family> allFamiliesInTree;
+    private List<FamilyChild> allFamilyChildrenInTree;
+
     private Individual rootIndividual;
     private MainActivity mainActivity;
 
@@ -143,16 +144,15 @@ public class FanchartCanvasView extends View {
         invalidate();
     }
 
-    public void configureChart(Individual rootIndividual, Map<Integer, Individual> allIndividualsInTree, Map<Integer, Family> allFamiliesInTree, AppDatabase database, int treeId, MainActivity mainActivity, int generations, NameFormat nameFormat)
+    public void configureChart(Individual rootIndividual, Map<Integer, Individual> allIndividualsInTree, Map<Integer, Family> allFamiliesInTree, List<FamilyChild> allFamilyChildrenInTree, MainActivity mainActivity, int generations, NameFormat nameFormat)
     {
         this.individuals = new ArrayList<>();
         this.allIndividualsInTree = allIndividualsInTree;
         this.allFamiliesInTree = allFamiliesInTree;
+        this.allFamilyChildrenInTree = allFamilyChildrenInTree;
         this.generations = generations;
         this.nameFormat = nameFormat;
         this.rootIndividual = rootIndividual;
-        this.database = database;
-        this.treeId = treeId;
         this.mainActivity = mainActivity;
         this.showAncestors = true;
         this.isConfigured = true;
@@ -450,11 +450,11 @@ public class FanchartCanvasView extends View {
     }
 
     private void processDescendantGeneration(int generation, float currentStartAngle, float currentSweepAngle, int individualId) {
-        List<Family> families = database.familyDao().getAllFamiliesForHusbandOrWife(treeId, individualId);
+        List<Family> families = ListSearchUtils.findFamiliesForWifeOrHusband(individualId, this.allFamiliesInTree);
         List<Integer> childIds = new ArrayList<>();
 
         for(Family family : families) {
-            List<FamilyChild> children = database.familyChildDao().getAllFamilyChildren(treeId, family.familyId);
+            List<FamilyChild> children = ListSearchUtils.findChildrenForFamily(family.familyId, this.allFamilyChildrenInTree);
             for(FamilyChild child : children) {
                 childIds.add(child.individualId);
             }

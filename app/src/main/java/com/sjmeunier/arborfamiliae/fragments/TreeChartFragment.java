@@ -11,12 +11,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.sjmeunier.arborfamiliae.ChartSaveAsyncTask;
+import com.sjmeunier.arborfamiliae.charts.ChartSaveAsyncTask;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
-import com.sjmeunier.arborfamiliae.TreeChartCanvasView;
+import com.sjmeunier.arborfamiliae.charts.TreeChartCanvasView;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
-import com.sjmeunier.arborfamiliae.database.AppDatabase;
 
 public class TreeChartFragment extends Fragment{
 
@@ -58,13 +57,10 @@ public class TreeChartFragment extends Fragment{
         if (mainActivity.activeIndividual == null || mainActivity.activeTree == null)
             return;
 
-        AppDatabase database = AppDatabase.getDatabase(mainActivity);
-        int treeId = mainActivity.activeTree.id;
-
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
         int maxGeneration = Integer.parseInt(settings.getString("treechart_generations_preference", "4"));
         NameFormat nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 
-        treeChartCanvas.configureChart(mainActivity.individualsInActiveTree.get(mainActivity.activeIndividual.individualId), mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, database, treeId, mainActivity, maxGeneration, nameFormat);
+        treeChartCanvas.configureChart(mainActivity.individualsInActiveTree.get(mainActivity.activeIndividual.individualId), mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity, maxGeneration, nameFormat);
     }
 }

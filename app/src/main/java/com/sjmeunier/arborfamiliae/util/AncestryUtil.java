@@ -1,4 +1,4 @@
-package com.sjmeunier.arborfamiliae;
+package com.sjmeunier.arborfamiliae.util;
 
 import android.text.TextUtils;
 
@@ -7,12 +7,7 @@ import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.Individual;
 import com.sjmeunier.arborfamiliae.database.Place;
 
-import org.w3c.dom.Text;
-
-import java.util.HashMap;
 import java.util.Map;
-
-import static java.lang.System.out;
 
 public class AncestryUtil {
     public static String calculateRelationship(int generations, boolean isMale)
@@ -47,7 +42,14 @@ public class AncestryUtil {
     }
 
     public static int convertStringToInt(String value) {
-        return Integer.parseInt(value.replaceAll("[\\D]", ""));
+        int result = 0;
+        try {
+            result = Integer.parseInt(value.replaceAll("[\\D]", ""));
+        } catch (Exception e) {
+            //Not a string so will return 0
+        }
+
+        return result;
     }
 
     public static String processDate(String date, boolean onlyYear)
@@ -74,7 +76,10 @@ public class AncestryUtil {
 
                     int year = 0;
                     year = convertStringToInt(dateArr[dateArr.length - 1]);
-                    return String.valueOf(year);
+                    if (year == 0)
+                        return "?";
+                    else
+                        return String.valueOf(year);
                 }
             }
             else

@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.sjmeunier.arborfamiliae.OnTreeListViewDeleteListener;
-import com.sjmeunier.arborfamiliae.data.LinkedIndividual;
 import com.sjmeunier.arborfamiliae.database.AppDatabase;
 import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.FamilyChild;
@@ -24,8 +22,6 @@ import com.sjmeunier.arborfamiliae.database.Tree;
 import com.sjmeunier.arborfamiliae.util.FileDetail;
 import com.sjmeunier.arborfamiliae.util.FileUtils;
 
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +31,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 

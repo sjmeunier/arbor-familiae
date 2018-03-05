@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.sjmeunier.arborfamiliae.AncestryUtil;
+import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
@@ -25,7 +25,6 @@ import com.sjmeunier.arborfamiliae.database.Source;
 import com.sjmeunier.arborfamiliae.util.Utility;
 
 import java.util.List;
-import java.util.jar.Attributes;
 
 public class IndividualBiographicalFragment extends Fragment {
 

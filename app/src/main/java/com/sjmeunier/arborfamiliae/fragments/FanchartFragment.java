@@ -1,37 +1,23 @@
 package com.sjmeunier.arborfamiliae.fragments;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.sjmeunier.arborfamiliae.ChartSaveAsyncTask;
-import com.sjmeunier.arborfamiliae.FanchartCanvasView;
+import com.sjmeunier.arborfamiliae.charts.ChartSaveAsyncTask;
+import com.sjmeunier.arborfamiliae.charts.FanchartCanvasView;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
-import com.sjmeunier.arborfamiliae.database.AppDatabase;
-import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.Individual;
-import com.sjmeunier.arborfamiliae.util.FileUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class FanchartFragment extends Fragment{
@@ -39,8 +25,6 @@ public class FanchartFragment extends Fragment{
     private MainActivity mainActivity;
 
     private int maxGeneration = 0;
-    private AppDatabase database;
-    private int treeId = 0;
 
     private Map<Integer, Individual> individuals;
     private FanchartCanvasView fanchartCanvas;
@@ -86,6 +70,6 @@ public class FanchartFragment extends Fragment{
         maxGeneration = Integer.parseInt(settings.getString("fanchart_generations_preference", "4"));
         nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 
-        fanchartCanvas.configureChart(mainActivity.activeIndividual, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.database, mainActivity.activeTree.id, mainActivity, maxGeneration, nameFormat);
+        fanchartCanvas.configureChart(mainActivity.activeIndividual, mainActivity.individualsInActiveTree, mainActivity.familiesInActiveTree, mainActivity.familyChildrenInActiveTree, mainActivity, maxGeneration, nameFormat);
     }
 }

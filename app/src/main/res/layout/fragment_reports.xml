@@ -33,17 +33,18 @@
             android:popupBackground="@color/colorPrimary"
             />
         <TextView
+            android:id="@+id/label_maximum_generations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/label_maximum_generations">
         </TextView>
-        <EditText
+        <Spinner
+            android:id="@+id/maximum_generations"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:text="10"
-            android:id="@+id/maximum_generations"/>
+            android:popupBackground="@color/colorPrimary"
+            />
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

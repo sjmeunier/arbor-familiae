@@ -88,12 +88,28 @@ public class ReportsFragment extends Fragment{
         includedIndividualDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         includedIndividualsSpinner.setAdapter(includedIndividualDataAdapter);
 
-        EditText maximumGenerations = view.findViewById(R.id.maximum_generations);
+        Spinner maximumGenerationsSpinner = (Spinner) view.findViewById(R.id.maximum_generations);
+        List<String> maximumGenerationsList = new ArrayList<String>();
+        maximumGenerationsList.add("5");
+        maximumGenerationsList.add("10");
+        maximumGenerationsList.add("15");
+        maximumGenerationsList.add("20");
+        maximumGenerationsList.add("All");
+
+        final ArrayAdapter<String> maximumGenerationsDataAdapter = new ArrayAdapter<String>(mainActivity,
+                android.R.layout.simple_spinner_item, maximumGenerationsList);
+        maximumGenerationsDataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        maximumGenerationsSpinner.setAdapter(maximumGenerationsDataAdapter);
+
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-        maximumGenerations.setText(settings.getString("reports_maxgenerations", "10"));
 
         TextView reportOutput = view.findViewById(R.id.report_output);
         reportOutput.setVisibility(View.GONE);
+        try {
+            maximumGenerationsSpinner.setSelection(settings.getInt("reports_maximum_generations", 1));
+        } catch (Exception e) {
+
+        }
 
         try {
             reportTypeSpinner.setSelection(settings.getInt("reports_type", 0));
@@ -200,12 +216,23 @@ public class ReportsFragment extends Fragment{
                         includedIndividuals = IncludedIndividuals.Decendants;
                 }
 
-                EditText maximumGenerations = mainActivity.findViewById(R.id.maximum_generations);
+                Spinner maximumGenerationsSpinner = (Spinner) mainActivity.findViewById(R.id.maximum_generations);
+
+                int maximumGenerations = 0;
+                if (maximumGenerationsSpinner.getSelectedItem().equals("All")) {
+                    maximumGenerations = 999;
+                } else {
+                    try {
+                        maximumGenerations = Integer.parseInt(maximumGenerationsSpinner.getSelectedItem().toString());
+                    } catch (Exception e) {
+                        maximumGenerations = 10;
+                    }
+                }
 
                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putString("reports_maxgenerations", maximumGenerations.getText().toString());
                 editor.putInt("reports_type", reportTypeSpinner.getSelectedItemPosition());
+                editor.putInt("reports_maximum_generations", maximumGenerationsSpinner.getSelectedItemPosition());
                 editor.putInt("included_individuals", includedIndividualsSpinner.getSelectedItemPosition());
                 editor.commit();
 
@@ -213,7 +240,7 @@ public class ReportsFragment extends Fragment{
                 reportOutput.setVisibility(View.GONE);
 
                 try {
-                    generateReportAsyncTask.execute(reportType.ordinal(), Integer.parseInt(maximumGenerations.getText().toString()), includedIndividuals.ordinal());
+                    generateReportAsyncTask.execute(reportType.ordinal(), maximumGenerations, includedIndividuals.ordinal());
                 } catch(Exception e) {
                     Toast.makeText(mainActivity, "Unable to parse maximum generations", Toast.LENGTH_SHORT);
                 }
@@ -256,12 +283,23 @@ public class ReportsFragment extends Fragment{
                         includedIndividuals = IncludedIndividuals.Decendants;
                 }
 
-                EditText maximumGenerations = mainActivity.findViewById(R.id.maximum_generations);
+                Spinner maximumGenerationsSpinner = (Spinner) mainActivity.findViewById(R.id.maximum_generations);
+
+                int maximumGenerations = 0;
+                if (maximumGenerationsSpinner.getSelectedItem().equals("All")) {
+                    maximumGenerations = 999;
+                } else {
+                    try {
+                        maximumGenerations = Integer.parseInt(maximumGenerationsSpinner.getSelectedItem().toString());
+                    } catch (Exception e) {
+                        maximumGenerations = 10;
+                    }
+                }
 
                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mainActivity);
                 SharedPreferences.Editor editor = settings.edit();
-                editor.putString("reports_maxgenerations", maximumGenerations.getText().toString());
                 editor.putInt("reports_type", reportTypeSpinner.getSelectedItemPosition());
+                editor.putInt("reports_maximum_generations", maximumGenerationsSpinner.getSelectedItemPosition());
                 editor.putInt("included_individuals", includedIndividualsSpinner.getSelectedItemPosition());
                 editor.commit();
 
@@ -269,7 +307,7 @@ public class ReportsFragment extends Fragment{
                 reportOutput.setVisibility(View.GONE);
 
                 try {
-                    displayReportAsyncTask.execute(reportType.ordinal(), Integer.parseInt(maximumGenerations.getText().toString()), includedIndividuals.ordinal());
+                    displayReportAsyncTask.execute(reportType.ordinal(), maximumGenerations, includedIndividuals.ordinal());
                 } catch(Exception e) {
                     Toast.makeText(mainActivity, "Unable to parse maximum generations", Toast.LENGTH_SHORT);
                 }

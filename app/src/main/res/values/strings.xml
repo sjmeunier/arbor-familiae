@@ -27,7 +27,7 @@
     <string name="about_treelist_description">The tree list view shows all currently available trees saved. From this view you can also import new trees from GEDCOM files and select an active tree</string>
 
     <string name="about_reports_header">Reports</string>
-    <string name="about_reports_description">Reports allow you to export desecendant/ancestor reports to PDF files</string>
+    <string name="about_reports_description">Reports allow you to generate descendant/ancestor reports. The reports can be either exported to a text file and shared with other applications, or displayed on screen. The report data is both horizontally and vertically scrollable. The available reports are: Detailed ancestry, Ancestry summary, Leaf ancestors, Descendants, mt-DNA, Y-DNA, Places, Countries, Lifespans, and Surnames.</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -93,13 +93,15 @@
     <string name="label_root">Root</string>
     <string name="label_active">Active</string>
 
+    <string name="label_included_individuals">Included Individuals</string>
     <string name="label_report_type">Report Type</string>
     <string name="label_maximum_generations">Maximum generations back</string>
     <string name="report_type_prompt">Report Type</string>
 
     <string name="button_rateapp">Rate App</string>
     <string name="button_feedback">Send Feedback</string>
-    <string name="button_generate_report">Generate Report</string>
+    <string name="button_export_report">Export</string>
+    <string name="button_display_report">Display</string>
 
     <string name="error_market_not_found">Could not open Android market, please install the market app.</string>
     <string name="error_could_not_share_chart">Could not share chart.</string>
@@ -134,11 +136,13 @@
 
     <string name="report_ancestry_detailed">The detailed ancestry report gives detailed biographical information for all ancestors of the active individual, up to the specified number of generations</string>
     <string name="report_ancestry_summary">The ancestry summary report gives a basic summary for all ancestors of the active individual, up to the specified number of generations</string>
+    <string name="report_leaf_ancestors">The leaf ancestor report gives a basic summary for all ancestors of the active individual, which are missing one or both parents, up to the specified number of generations</string>
     <string name="report_descendant">The descendant report shows all descendants of the active individual, up to the specified number of generations</string>
     <string name="report_mtdna">The mt-DNA report finds the oldest ancestor with the same mt-DNA as the active individual (the maternal lineage), and then generates all descendants of this individual which share the same mt-DNA, up to the specified number of generations</string>
     <string name="report_ydna">The Y-DNA report finds the oldest ancestor with the same Y-DNA as the active individual (the paternal lineage), and then generates all descendants of this individual which share the same Y-DNA, up to the specified number of generations</string>
-    <string name="report_places">The places report lists all places included in the life events of the ancestors of the active individual, up to the specified number of generations, including the number of occurrences of the place</string>
-    <string name="report_lifespan">The lifespan report shows a summary of the lifespans of the ancestors of the active individual, up to the specified number of generations</string>
-    <string name="report_countries">The countries report lists all countries included in the life events of the ancestors of the active individual, up to the specified number of generations, including the number of occurrences of the country. The report assumes that the last part of a place name, separated by commas, is the country.</string>
+    <string name="report_places">The places report lists all places included in the life events of the ancestors, descendants of the active individual, up to the specified number of generations, or of the whole tree, including the number of occurrences of the place</string>
+    <string name="report_lifespan">The lifespan report shows a summary of the lifespans of the ancestors or descendants of the active individual, or of the whole tree, up to the specified number of generations</string>
+    <string name="report_countries">The countries report lists all countries included in the life events of the ancestors or descendants of the active individual, up to the specified number of generations, or of the whole tree, including the number of occurrences of the country. The report assumes that the last part of a place name, separated by commas, is the country.</string>
+    <string name="report_surname">The surname report lists all surnames of the ancestors or descendants of the active individual, up to the specified number of generations, or of the whole tree, including the number of occurrences.</string>
 
 </resources>

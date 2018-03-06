@@ -95,7 +95,7 @@ public class TreeListAdapter  extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 final String name = treeList.get(position).name;
-                new AlertDialog.Builder(activity, android.R.style.Theme_Holo_Dialog)
+                new AlertDialog.Builder(activity, R.style.MyProgressDialog)
                         .setTitle("Confirmation")
                         .setMessage("Are you sure you want to delete tree " + name + "?")
                         .setIcon(android.R.drawable.ic_dialog_alert)

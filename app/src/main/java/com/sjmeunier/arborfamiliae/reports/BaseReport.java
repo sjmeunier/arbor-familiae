@@ -18,7 +18,6 @@ import java.util.Map;
 
 public class BaseReport {
     protected Context context;
-    protected AppDatabase database;
     protected Map<Integer, Place> placesInActiveTree;
     protected Map<Integer, Individual> individualsInActiveTree;
     protected Map<Integer, Family> familiesInActiveTree;
@@ -30,9 +29,8 @@ public class BaseReport {
     protected FileOutputStream fout;
     protected File file;
 
-    public BaseReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
+    public BaseReport(Context context, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
         this.context = context;
-        this.database = database;
         this.placesInActiveTree = placesInActiveTree;
         this.individualsInActiveTree = individualsInActiveTree;
         this.familiesInActiveTree = familiesInActiveTree;

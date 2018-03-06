@@ -19,8 +19,8 @@ import java.util.Map;
 
 public class DescendantReport extends BaseReport {
 
-    public DescendantReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
-        super(context, database, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, familyChildrenInActiveTree, nameFormat, maxGenerations, treeId);
+    public DescendantReport(Context context, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
+        super(context, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, familyChildrenInActiveTree, nameFormat, maxGenerations, treeId);
     }
 
     @Override

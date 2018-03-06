@@ -25,8 +25,8 @@ public class AncestrySummaryReport extends BaseReport {
     private Map<Integer, Long> ancestorIdsAhnenNumbers;
     private List<Long> ahnenNumbers;
 
-    public AncestrySummaryReport(Context context, AppDatabase database, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
-        super(context, database, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, familyChildrenInActiveTree, nameFormat, maxGenerations, treeId);
+    public AncestrySummaryReport(Context context, Map<Integer, Place> placesInActiveTree, Map<Integer, Individual> individualsInActiveTree, Map<Integer, Family> familiesInActiveTree, List<FamilyChild> familyChildrenInActiveTree, NameFormat nameFormat, int maxGenerations, int treeId) {
+        super(context, placesInActiveTree, individualsInActiveTree, familiesInActiveTree, familyChildrenInActiveTree, nameFormat, maxGenerations, treeId);
     }
 
     @Override

@@ -107,14 +107,14 @@ public class AncestryDetailedReport extends BaseReport {
                 if (family != null) {
                     Individual parent;
 
-                    if (this.familiesInActiveTree.containsKey(family.husbandId)) {
+                    if (this.individualsInActiveTree.containsKey(family.husbandId)) {
                         parent = this.individualsInActiveTree.get(family.husbandId);
                         if (parent != null) {
                             this.writeLine("Father: " + AncestryUtil.generateName(parent, this.nameFormat));
                             anyParent = true;
                         }
                     }
-                    if (this.familiesInActiveTree.containsKey(family.wifeId)) {
+                    if (this.individualsInActiveTree.containsKey(family.wifeId)) {
                         parent = this.individualsInActiveTree.get(family.wifeId);
                         if (parent != null) {
                             this.writeLine("Mother: " + AncestryUtil.generateName(parent, this.nameFormat));

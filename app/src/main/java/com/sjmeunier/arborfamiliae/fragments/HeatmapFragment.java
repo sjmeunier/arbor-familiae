@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.sjmeunier.arborfamiliae.ScaleBar;
 import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
@@ -76,6 +77,7 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
         MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
         return view;
     }
 
@@ -83,6 +85,8 @@ public class HeatmapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        ScaleBar scaleBar = mainActivity.findViewById(R.id.heatmap_scale);
+        scaleBar.setMap(mainActivity, mMap);
 
         getLocations();
 

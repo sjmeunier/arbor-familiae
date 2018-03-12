@@ -29,6 +29,9 @@
     <string name="about_reports_header">Reports</string>
     <string name="about_reports_description">Reports allow you to generate descendant/ancestor reports. The reports can be either exported to a text file and shared with other applications, or displayed on screen. The report data is both horizontally and vertically scrollable. The available reports are: Detailed ancestry, Ancestry summary, Leaf ancestors, Descendants, mt-DNA, Y-DNA, Places, Countries, Lifespans, and Surnames.</string>
 
+    <string name="about_credits">Credits</string>
+    <string name="about_credits_patternhead">Background image - John Rawsterne/Patternhead (www.patternhead.com).</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

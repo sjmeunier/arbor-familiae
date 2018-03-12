@@ -164,6 +164,26 @@
             android:layout_height="wrap_content"
             android:id="@+id/about_reports_text"
             android:text="@string/about_reports_description" />
+        <View
+            android:layout_marginTop="10dp"
+            android:padding="0dp"
+            android:layout_width="match_parent"
+            android:background="@drawable/gradient_line"
+            android:layout_height="1dp">
+        </View>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:id="@+id/about_credits"
+            android:text="@string/about_credits" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/about_credits_patternhead"
+            android:text="@string/about_credits_patternhead" />
     </LinearLayout>
 
 </ScrollView>

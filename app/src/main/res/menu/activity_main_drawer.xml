@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <group android:checkableBehavior="single" android:id="@+id/top_group">
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_menu_about"
+            android:title="@string/action_about" />
+    </group>
+
     <group android:checkableBehavior="single" android:id="@+id/tree_group">
         <item
             android:id="@+id/nav_search"
@@ -46,9 +53,5 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_settings"
             android:title="@string/action_settings" />
-        <item
-            android:id="@+id/nav_about"
-            android:icon="@drawable/ic_menu_about"
-            android:title="@string/action_about" />
     </group>
 </menu>

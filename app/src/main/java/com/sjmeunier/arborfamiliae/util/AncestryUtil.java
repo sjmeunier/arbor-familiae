@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.sjmeunier.arborfamiliae.data.NameFormat;
 import com.sjmeunier.arborfamiliae.database.Family;
 import com.sjmeunier.arborfamiliae.database.Individual;
+import com.sjmeunier.arborfamiliae.database.IndividualAlternativeName;
 import com.sjmeunier.arborfamiliae.database.Place;
 
 import java.util.Map;
@@ -170,6 +171,50 @@ public class AncestryUtil {
         if (nameFormat == NameFormat.FirstnameSurnameSuffix || nameFormat == NameFormat.SurnameFirstnameSuffix || nameFormat == NameFormat.FirstnameSURNAMESuffix || nameFormat == NameFormat.SURNAMEFirstnameSuffix) {
             if (!TextUtils.isEmpty(individual.suffix))
                 name += " (" + individual.suffix + ")";
+        }
+
+        return name.trim();
+    }
+
+    public static String generateAlternativeName(IndividualAlternativeName alternativeName, NameFormat nameFormat)
+    {
+        if (alternativeName == null)
+            return "";
+
+        String name = "";
+        if (nameFormat == NameFormat.SurnameFirstnameSuffix || nameFormat == NameFormat.SurnameFirstname) {
+            if (!alternativeName.surname.startsWith(alternativeName.prefix + " "))
+                name = alternativeName.prefix + " ";
+            name += alternativeName.surname;
+            if (!TextUtils.isEmpty(alternativeName.givenName))
+                name += ", " + alternativeName.givenName;
+        } else if (nameFormat == NameFormat.SURNAMEFirstnameSuffix || nameFormat == NameFormat.SURNAMEFirstname) {
+            if (!alternativeName.surname.startsWith(alternativeName.prefix + " "))
+                name = alternativeName.prefix + " ";
+            name += alternativeName.surname.toUpperCase();
+            if (!TextUtils.isEmpty(alternativeName.givenName))
+                name += ", " + alternativeName.givenName;
+
+        } else if (nameFormat == NameFormat.FirstnameSurnameSuffix || nameFormat == NameFormat.FirstnameSurname) {
+            name = alternativeName.givenName;
+            if (!TextUtils.isEmpty(alternativeName.surname)) {
+                if (!alternativeName.surname.startsWith(alternativeName.prefix + " "))
+                    name += " " + alternativeName.prefix;
+
+                name += " " + alternativeName.surname;
+            }
+        } else  {
+            name = alternativeName.givenName;
+            if (!TextUtils.isEmpty(alternativeName.surname)) {
+                if (!alternativeName.surname.startsWith(alternativeName.prefix + " "))
+                    name += " " + alternativeName.prefix;
+
+                name += " " + alternativeName.surname.toUpperCase();
+            }
+        }
+        if (nameFormat == NameFormat.FirstnameSurnameSuffix || nameFormat == NameFormat.SurnameFirstnameSuffix || nameFormat == NameFormat.FirstnameSURNAMESuffix || nameFormat == NameFormat.SURNAMEFirstnameSuffix) {
+            if (!TextUtils.isEmpty(alternativeName.suffix))
+                name += " (" + alternativeName.suffix + ")";
         }
 
         return name.trim();

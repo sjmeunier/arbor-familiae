@@ -6,6 +6,7 @@ public enum GedcomSubRecordEnum
     HeaderSource,
     HeaderGedcom,
     IndividualName,
+    IndividualAlternativeName,
     IndividualBirth,
     IndividualDeath,
     IndividualBaptism,

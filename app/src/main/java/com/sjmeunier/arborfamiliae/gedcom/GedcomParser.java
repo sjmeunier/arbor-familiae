@@ -13,6 +13,7 @@ import com.sjmeunier.arborfamiliae.database.FamilyNote;
 import com.sjmeunier.arborfamiliae.database.FamilySource;
 import com.sjmeunier.arborfamiliae.database.GenderEnum;
 import com.sjmeunier.arborfamiliae.database.Individual;
+import com.sjmeunier.arborfamiliae.database.IndividualAlternativeName;
 import com.sjmeunier.arborfamiliae.database.IndividualNote;
 import com.sjmeunier.arborfamiliae.database.IndividualSource;
 import com.sjmeunier.arborfamiliae.database.Note;
@@ -47,6 +48,7 @@ public class GedcomParser {
     private int defaultIndividualId = 0;
     private GedcomHeader gedcomHeader = new GedcomHeader();
     private Individual currentGedcomIndividual;
+    private IndividualAlternativeName currentGedcomIndividualAlternativeName;
     private Family currentGedcomFamily;
     private Note currentGedcomNote;
     private Source currentGedcomSource;
@@ -55,6 +57,7 @@ public class GedcomParser {
 
     private Map<String, Place> places =  new HashMap<String, Place>();
     private List<Individual> individuals = new ArrayList<Individual>();
+    private List<IndividualAlternativeName> individualAlternativeNames = new ArrayList<IndividualAlternativeName>();
     private List<Family> families = new ArrayList<Family>();
     private List<Note> notes = new ArrayList<Note>();
     private List<Source> sources = new ArrayList<Source>();
@@ -71,6 +74,7 @@ public class GedcomParser {
     public int familyCount = 0;
     public int noteCount = 0;
     public int sourceCount = 0;
+    public int individualAlternativeNameCount = 0;
 
     public long bytesRead = 0;
 
@@ -165,6 +169,10 @@ public class GedcomParser {
 
             tree.individualCount = individualCount;
         }
+        if (individualAlternativeNames.size() > 0) {
+            database.individualAlternativeNameDao().addIndividualAlternativeNames(individualAlternativeNames.toArray(new IndividualAlternativeName[0]));
+            individualAlternativeNames.clear();
+        }
         if (families.size() > 0) {
             database.familyDao().addFamilies(families.toArray(new Family[0]));
             families.clear();
@@ -226,6 +234,7 @@ public class GedcomParser {
             places.put(currentPlace.placeName, currentPlace);
             currentPlace = null;
         }
+        alreadyFoundName = false;
         switch (currentRecord)
         {
             case Individual:
@@ -269,6 +278,16 @@ public class GedcomParser {
                     sources.clear();
                 }
                 break;
+        }
+
+        if (currentGedcomIndividualAlternativeName != null) {
+            individualAlternativeNames.add(currentGedcomIndividualAlternativeName);
+            individualAlternativeNameCount++;
+            if (individualAlternativeNameCount % 1000 == 0) {
+                database.individualAlternativeNameDao().addIndividualAlternativeNames(individualAlternativeNames.toArray(new IndividualAlternativeName[0]));
+                individualAlternativeNames.clear();
+            }
+            currentGedcomIndividualAlternativeName = null;
         }
 
         if (lineArray[1].toUpperCase().equals("HEAD"))
@@ -373,22 +392,48 @@ public class GedcomParser {
         }
         else if (currentRecord == GedcomRecordEnum.Individual)
         {
+            if (currentSubRecord == GedcomSubRecordEnum.IndividualAlternativeName) {
+                if (currentGedcomIndividualAlternativeName != null) {
+                    individualAlternativeNames.add(currentGedcomIndividualAlternativeName);
+                    individualAlternativeNameCount++;
+                    if (individualAlternativeNameCount % 1000 == 0) {
+                        database.individualAlternativeNameDao().addIndividualAlternativeNames(individualAlternativeNames.toArray(new IndividualAlternativeName[0]));
+                        individualAlternativeNames.clear();
+                    }
+                    currentGedcomIndividualAlternativeName = null;
+                }
+            }
+
             switch (lineArray[1].toUpperCase())
             {
                 case "NAME":
-                    currentSubRecord = GedcomSubRecordEnum.IndividualName;
+
                     if (TextUtils.isEmpty(currentGedcomIndividual.givenName) && TextUtils.isEmpty(currentGedcomIndividual.surname)) {
-                        alreadyFoundName = false;
+                        currentSubRecord = GedcomSubRecordEnum.IndividualName;
                     } else {
-                        alreadyFoundName = true;
+                        currentSubRecord = GedcomSubRecordEnum.IndividualAlternativeName;
                     }
-                    if (lineArray.length > 2 && !alreadyFoundName) {
-                        if (lineArray[2].contains("/")) {
-                            String[] name = lineArray[2].split("/", 3);
-                            currentGedcomIndividual.givenName = name[0].trim();
-                            currentGedcomIndividual.surname = name[1].trim();
-                        } else {
-                            currentGedcomIndividual.givenName = lineArray[2].trim();
+
+                    if (currentSubRecord == GedcomSubRecordEnum.IndividualName) {
+                        if (lineArray.length > 2) {
+                            if (lineArray[2].contains("/")) {
+                                String[] name = lineArray[2].split("/", 3);
+                                currentGedcomIndividual.givenName = name[0].trim();
+                                currentGedcomIndividual.surname = name[1].trim();
+                            } else {
+                                currentGedcomIndividual.givenName = lineArray[2].trim();
+                            }
+                        }
+                    } else {
+                        currentGedcomIndividualAlternativeName = new IndividualAlternativeName(currentGedcomIndividual.individualId, treeId);
+                        if (lineArray.length > 2) {
+                            if (lineArray[2].contains("/")) {
+                                String[] name = lineArray[2].split("/", 3);
+                                currentGedcomIndividualAlternativeName.givenName = name[0].trim();
+                                currentGedcomIndividualAlternativeName.surname = name[1].trim();
+                            } else {
+                                currentGedcomIndividualAlternativeName.givenName = lineArray[2].trim();
+                            }
                         }
                     }
                     break;
@@ -593,24 +638,40 @@ public class GedcomParser {
             switch (lineArray[1].toUpperCase())
             {
                 case "GIVN":
-                    if (!alreadyFoundName)
-                        currentGedcomIndividual.givenName = lineArray[2];
+                    currentGedcomIndividual.givenName = lineArray[2];
                     break;
                 case "SURN":
-                    if (!alreadyFoundName)
-                        currentGedcomIndividual.surname = lineArray[2];
+                    currentGedcomIndividual.surname = lineArray[2];
                     break;
                 case "NSFX":
-                    if (!alreadyFoundName)
-                        currentGedcomIndividual.suffix = lineArray[2];
+                    currentGedcomIndividual.suffix = lineArray[2];
                     break;
                 case "SPFX":
-                    if (!alreadyFoundName)
-                        currentGedcomIndividual.prefix = lineArray[2];
+                   currentGedcomIndividual.prefix = lineArray[2];
                     break;
                 case "_AKA":
-                    if (!alreadyFoundName && !TextUtils.isEmpty(currentGedcomIndividual.suffix))
-                        currentGedcomIndividual.suffix = lineArray[2];
+                    currentGedcomIndividual.suffix = lineArray[2];
+                    break;
+            }
+        }
+        else if (currentSubRecord == GedcomSubRecordEnum.IndividualAlternativeName)
+        {
+            switch (lineArray[1].toUpperCase())
+            {
+                case "GIVN":
+                    currentGedcomIndividualAlternativeName.givenName = lineArray[2];
+                    break;
+                case "SURN":
+                    currentGedcomIndividualAlternativeName.surname = lineArray[2];
+                    break;
+                case "NSFX":
+                    currentGedcomIndividualAlternativeName.suffix = lineArray[2];
+                    break;
+                case "SPFX":
+                    currentGedcomIndividualAlternativeName.prefix = lineArray[2];
+                    break;
+                case "_AKA":
+                    currentGedcomIndividualAlternativeName.suffix = lineArray[2];
                     break;
             }
         }

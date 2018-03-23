@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.sjmeunier.arborfamiliae.database.IndividualAlternativeName;
 import com.sjmeunier.arborfamiliae.util.AncestryUtil;
 import com.sjmeunier.arborfamiliae.MainActivity;
 import com.sjmeunier.arborfamiliae.R;
@@ -80,6 +81,21 @@ public class IndividualBiographicalFragment extends Fragment {
             text = row.findViewById(R.id.tablerow_individual_twocolumn_col2);
             text.setText(AncestryUtil.generateName(mainActivity.activeIndividual, nameFormat));
             biographicalTable.addView(row);
+
+            List<IndividualAlternativeName> alternativeNames = mainActivity.database.individualAlternativeNameDao().getAllIndividualAlternativeNameForIndividual(mainActivity.activeIndividual.treeId, mainActivity.activeIndividual.individualId);
+            boolean first = true;
+            for(IndividualAlternativeName alternativeName : alternativeNames) {
+                row = inflater.inflate(R.layout.tablerow_individual_twocolumn, null, false);
+                label = row.findViewById(R.id.tablerow_individual_twocolumn_col1);
+                if (first) {
+                    label.setText(mainActivity.getResources().getText(R.string.label_also_known_as));
+                }
+                text = row.findViewById(R.id.tablerow_individual_twocolumn_col2);
+                text.setText(AncestryUtil.generateAlternativeName(alternativeName, nameFormat));
+                biographicalTable.addView(row);
+                first = false;
+            }
+
 
             row = inflater.inflate(R.layout.tablerow_spacer, null, false);
             biographicalTable.addView(row);

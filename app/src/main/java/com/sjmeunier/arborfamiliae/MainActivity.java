@@ -204,6 +204,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_relationship:
                 fragmentClass = RelationshipFragment.class;
                 break;
+            case R.id.nav_lines_of_descent:
+                fragmentClass = LinesOfDescentFragment.class;
+                break;
             case R.id.nav_reports:
                 fragmentClass = ReportsFragment.class;
                 break;

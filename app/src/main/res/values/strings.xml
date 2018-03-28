@@ -47,6 +47,7 @@
     <string name="action_recent">Recent</string>
     <string name="action_reports">Reports</string>
     <string name="action_relationship">Relationship Chart</string>
+    <string name="action_lines_of_descent">Lines of Descent</string>
 
     <string name="action_set_home_person">Set as root</string>
     <string name="action_jump_to_root">Jump to root</string>
@@ -106,6 +107,8 @@
     <string name="button_feedback">Send Feedback</string>
     <string name="button_export_report">Export</string>
     <string name="button_display_report">Display</string>
+    <string name="button_next">Next</string>
+    <string name="button_prev">Prev</string>
 
     <string name="error_market_not_found">Could not open Android market, please install the market app.</string>
     <string name="error_could_not_share_chart">Could not share chart.</string>
@@ -125,9 +128,11 @@
     <string name="preferences_title_generations_treechart">Generations in tree chart</string>
     <string name="preferences_title_generations_fanchart">Generations in fan chart</string>
     <string name="preferences_title_generations_heatmap">Generations in heatmap</string>
+    <string name="preferences_title_generations_lines_of_descent">Generations in lines of descent chart</string>
     <string name="preferences_summary_generations_treechart">Number of generations to show in treechart</string>
     <string name="preferences_summary_generations_fanchart">Number of generations to show in fanchart</string>
     <string name="preferences_summary_generations_heatmap">Number of generations to show in heatmap</string>
+    <string name="preferences_summary_generations_lines_of_descent">Number of generations to calculate in lines of descent</string>
     <string name="preferences_dialog_title_generations">Generations to show</string>
 
     <string name="preferences_title_nameformat">Name format</string>

@@ -30,6 +30,10 @@
             android:icon="@drawable/ic_menu_relationship"
             android:title="@string/action_relationship" />
         <item
+            android:id="@+id/nav_lines_of_descent"
+            android:icon="@drawable/ic_menu_lines_of_descent"
+            android:title="@string/action_lines_of_descent" />
+        <item
             android:id="@+id/nav_heatmap"
             android:icon="@drawable/ic_menu_mapmode"
             android:title="@string/action_heatmap" />

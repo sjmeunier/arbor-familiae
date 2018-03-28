@@ -13,6 +13,20 @@
         <item>4</item>
         <item>5</item>
     </string-array>
+    <string-array name="preferences_generation_lines_of_descent_list_text">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>All</item>
+    </string-array>
+    <string-array name="preferences_generation_lines_of_descent_list_values">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>100</item>
+    </string-array>
 
     <string-array name="preferences_nameformat_description_list">
         <item>Lastname, Firstname (Suffix)</item>

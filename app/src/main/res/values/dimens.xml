@@ -10,4 +10,5 @@
     <dimen name="treelist_item_padding">10dp</dimen>
     <dimen name="listbutton_width">20dp</dimen>
     <dimen name="listbutton_height">20dp</dimen>
+    <dimen name="main_padding">10dp</dimen>
 </resources>

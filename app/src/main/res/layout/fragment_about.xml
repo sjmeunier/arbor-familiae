@@ -12,6 +12,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:fontFamily="cursive"
             android:textSize="20dp"
             android:id="@+id/about_appname"
@@ -20,18 +22,24 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:id="@+id/about_version"
             android:text="">
         </TextView>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:id="@+id/about_author"
             android:text="@string/about_author">
         </TextView>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:id="@+id/about_license"
             android:text="@string/about_copyright">
         </TextView>
@@ -72,96 +80,128 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
             android:id="@+id/about_treelist_title"
             android:text="@string/about_treelist_header" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginBottom="10dp"
             android:id="@+id/about_treelist_text"
             android:text="@string/about_treelist_description" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
             android:id="@+id/about_individual_title"
             android:text="@string/about_individualview_header" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginBottom="10dp"
             android:id="@+id/about_individual_text"
             android:text="@string/about_individualview_description" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
             android:id="@+id/about_search_title"
             android:text="@string/about_search_header" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginBottom="10dp"
             android:id="@+id/about_search_text"
             android:text="@string/about_search_description" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
             android:id="@+id/about_treechart_title"
             android:text="@string/about_tree_header" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginBottom="10dp"
             android:id="@+id/about_treechart_text"
             android:text="@string/about_tree_description" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
             android:id="@+id/about_fanchart_title"
             android:text="@string/about_fanchart_header" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginBottom="10dp"
             android:id="@+id/about_fanchart_text"
             android:text="@string/about_fanchart_description" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
             android:id="@+id/about_relationship_title"
             android:text="@string/about_relationship_header" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginBottom="10dp"
             android:id="@+id/about_relationship_text"
             android:text="@string/about_relationship_description" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
             android:id="@+id/about_heatmap_title"
             android:text="@string/about_heatmap_header" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginBottom="10dp"
             android:id="@+id/about_heatmap_text"
             android:text="@string/about_heatmap_description" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
             android:id="@+id/about_reports_title"
             android:text="@string/about_reports_header" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:id="@+id/about_reports_text"
             android:text="@string/about_reports_description" />
         <View
@@ -174,6 +214,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginTop="10dp"
             android:textStyle="bold"
             android:id="@+id/about_credits"
@@ -181,6 +223,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginTop="10dp"
             android:id="@+id/about_credits_patternhead"
             android:text="@string/about_credits_patternhead" />

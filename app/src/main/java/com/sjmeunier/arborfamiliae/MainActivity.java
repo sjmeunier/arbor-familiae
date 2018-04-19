@@ -90,9 +90,7 @@ public class MainActivity extends AppCompatActivity
         nameFormat = NameFormat.values()[Integer.parseInt(settings.getString("nameformat_preference", "0"))];
 
         int treeId = settings.getInt("activeTree", 0);
-        if (treeId > 0) {
-            setActiveTree(treeId);
-        }
+        setActiveTree(treeId);
         if (findViewById(R.id.main_fragment_container) != null) {
 
             // However, if we're being restored from a previous state,
@@ -102,22 +100,35 @@ public class MainActivity extends AppCompatActivity
                 return;
             }
 
-            if (treeId > 0) {
-                TreeListFragment defaultFragment = new TreeListFragment();
-                defaultFragment.setArguments(getIntent().getExtras());
+            TreeListFragment defaultFragment = new TreeListFragment();
+            defaultFragment.setArguments(getIntent().getExtras());
 
-                getFragmentManager().beginTransaction()
-                        .add(R.id.main_fragment_container, defaultFragment).commit();
-            } else {
-                IndividualBiographicalFragment defaultFragment = new IndividualBiographicalFragment();
-                defaultFragment.setArguments(getIntent().getExtras());
-
-                getFragmentManager().beginTransaction()
-                        .add(R.id.main_fragment_container, defaultFragment).commit();
-            }
+            getFragmentManager().beginTransaction().add(R.id.main_fragment_container, defaultFragment).commit();
         }
     }
 
+
+    private void loadInitialFragment(int treeId) {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu navMenu = navigationView.getMenu();
+
+        if (findViewById(R.id.main_fragment_container) != null) {
+
+            if (treeId == 0) {
+                Fragment fragment = new TreeListFragment();
+                getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragment).commit();
+
+                navMenu.findItem(R.id.nav_treelist).setChecked(true);
+                setTitle(navMenu.findItem(R.id.nav_treelist).getTitle());
+            } else {
+                Fragment fragment = new IndividualBiographicalFragment();
+                getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragment).commit();
+
+                navMenu.findItem(R.id.nav_individual_details).setChecked(true);
+                setTitle(navMenu.findItem(R.id.nav_individual_details).getTitle());
+            }
+        }
+    }
 
     @Override
     public void onDestroy() {
@@ -299,6 +310,10 @@ public class MainActivity extends AppCompatActivity
 
 
     public void clearActiveTree() {
+        if (activeTree == null) {
+            clearRecentIndividuals(activeTree.id);
+        }
+
         activeIndividual = null;
         activeTree = null;
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -306,12 +321,31 @@ public class MainActivity extends AppCompatActivity
         editor.putInt("activeTree", 0);
         editor.commit();
 
-        clearRecentIndividuals();
         rootIndividualId = 0;
+
+        placesInActiveTree = new HashMap<Integer, Place>();
+        individualsInActiveTree = new HashMap<Integer, Individual>();
+        familiesInActiveTree = new HashMap<Integer, Family>();
+        familyChildrenInActiveTree = new ArrayList<>();
+        setMenuVisibility();
     }
     public void setActiveTree(int treeId) {
-        TreeLoader treeLoader = new TreeLoader(this);
-        treeLoader.execute(treeId);
+        if (treeId > 0) {
+            TreeLoader treeLoader = new TreeLoader(this);
+            treeLoader.execute(treeId);
+        } else {
+            activeIndividual = null;
+            activeTree = null;
+            rootIndividualId = 0;
+            recentIndividuals.clear();
+
+            placesInActiveTree = new HashMap<Integer, Place>();
+            individualsInActiveTree = new HashMap<Integer, Individual>();
+            familiesInActiveTree = new HashMap<Integer, Family>();
+            familyChildrenInActiveTree = new ArrayList<>();
+            setMenuVisibility();
+        }
+
     }
     public void deleteTreePreferences(int treeId) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -322,15 +356,41 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void clearRecentIndividuals() {
+    public void setMenuVisibility() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu navMenu = navigationView.getMenu();
+
+        if (activeTree == null || activeTree.id == 0) {
+            navMenu.findItem(R.id.nav_search).setVisible(false);
+            navMenu.findItem(R.id.nav_individual_details).setVisible(false);
+            navMenu.findItem(R.id.nav_tree).setVisible(false);
+            navMenu.findItem(R.id.nav_fanchart).setVisible(false);
+            navMenu.findItem(R.id.nav_relationship).setVisible(false);
+            navMenu.findItem(R.id.nav_lines_of_descent).setVisible(false);
+            navMenu.findItem(R.id.nav_heatmap).setVisible(false);
+            navMenu.findItem(R.id.nav_reports).setVisible(false);
+            navMenu.findItem(R.id.nav_recent).setVisible(false);
+        } else {
+            navMenu.findItem(R.id.nav_search).setVisible(true);
+            navMenu.findItem(R.id.nav_individual_details).setVisible(true);
+            navMenu.findItem(R.id.nav_tree).setVisible(true);
+            navMenu.findItem(R.id.nav_fanchart).setVisible(true);
+            navMenu.findItem(R.id.nav_relationship).setVisible(true);
+            navMenu.findItem(R.id.nav_lines_of_descent).setVisible(true);
+            navMenu.findItem(R.id.nav_heatmap).setVisible(true);
+            navMenu.findItem(R.id.nav_reports).setVisible(true);
+            navMenu.findItem(R.id.nav_recent).setVisible(true);
+        }
+    }
+
+
+    public void clearRecentIndividuals(int treeId) {
         recentIndividuals.clear();
 
-        if (activeTree != null) {
-            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putString("recentIndividuals_" + String.valueOf(activeTree.id), "");
-            editor.commit();
-        }
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("recentIndividuals_" + String.valueOf(treeId), "");
+        editor.commit();
     }
 
     public void addRecentIndividual(int id) {
@@ -440,7 +500,11 @@ public class MainActivity extends AppCompatActivity
                 if (activeIndividualName != null)
                     activeIndividualName.setText(AncestryUtil.generateName(activeIndividual, nameFormat));
                 Toast.makeText(context, context.getResources().getText(R.string.message_tree_selected) + " " + activeTree.name, Toast.LENGTH_SHORT).show();
+                loadInitialFragment(activeTree.id);
+            } else {
+                loadInitialFragment(0);
             }
+            setMenuVisibility();
             progressDialog.dismiss();
             this.context = null;
         }

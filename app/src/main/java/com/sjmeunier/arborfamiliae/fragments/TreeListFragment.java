@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sjmeunier.arborfamiliae.MainActivity;
@@ -86,9 +87,11 @@ public class TreeListFragment extends Fragment{
             @Override
             public void OnTreeListViewDelete(int treeId, String treeName) {
                 if (mainActivity.activeTree != null && mainActivity.activeTree.id == treeId) {
-                    mainActivity.deleteTreePreferences(treeId);
+
                     mainActivity.clearActiveTree();
                 }
+                mainActivity.clearRecentIndividuals(treeId);
+                mainActivity.deleteTreePreferences(treeId);
                 mainActivity.database.placeDao().deleteAllInTree(treeId);
                 mainActivity.database.familyChildDao().deleteAllInTree(treeId);
                 mainActivity.database.individualNoteDao().deleteAllInTree(treeId);
@@ -142,6 +145,8 @@ public class TreeListFragment extends Fragment{
                 alertDialog.show();
             }
         });
+        TextView emptyView = view.findViewById(R.id.empty_tree_list);
+        treeList.setEmptyView(emptyView);
 
         FloatingActionButton createTreeButton = (FloatingActionButton) view.findViewById(R.id.button_create_tree);
         createTreeButton.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +159,7 @@ public class TreeListFragment extends Fragment{
 
         return view;
     }
+
 
     private class GedcomLoader extends AsyncTask<Uri, Integer, String> {
         private Context context;

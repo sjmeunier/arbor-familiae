@@ -43,7 +43,7 @@
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
     <string name="action_tree">Tree Chart</string>
-    <string name="action_trees">Change Trees</string>
+    <string name="action_trees">Manage Trees</string>
     <string name="action_recent">Recent</string>
     <string name="action_reports">Reports</string>
     <string name="action_relationship">Relationship Chart</string>
@@ -123,6 +123,8 @@
     <string name="dialog_ok">Ok</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_rename_tree">Rename tree</string>
+
+    <string name="label_empty_tree_list">No trees found. Please import a GEDCOM file by clicking on the + button</string>
 
     <string name="preferences_general">General</string>
     <string name="preferences_title_generations_treechart">Generations in tree chart</string>

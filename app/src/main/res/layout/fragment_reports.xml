@@ -12,30 +12,41 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
+            android:layout_marginTop="@dimen/main_padding"
             android:text="@string/label_report_type">
         </TextView>
         <Spinner
             android:id="@+id/report_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:popupBackground="@color/colorPrimary"
             />
         <TextView
             android:id="@+id/label_included_individuals"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:text="@string/label_included_individuals">
         </TextView>
         <Spinner
             android:id="@+id/included_individuals"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:popupBackground="@color/colorPrimary"
             />
         <TextView
             android:id="@+id/label_maximum_generations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginTop="10dp"
             android:text="@string/label_maximum_generations">
         </TextView>
@@ -43,6 +54,8 @@
             android:id="@+id/maximum_generations"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:popupBackground="@color/colorPrimary"
             />
         <LinearLayout
@@ -75,6 +88,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/main_padding"
+            android:layout_marginRight="@dimen/main_padding"
             android:layout_marginTop="10dp"
             android:id="@+id/report_description"
             android:text="" />
@@ -83,6 +98,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/main_padding"
+                android:layout_marginRight="@dimen/main_padding"
                 android:layout_marginTop="10dp"
                 android:id="@+id/report_output"
                 android:fontFamily="monospace"

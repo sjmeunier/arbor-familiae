@@ -39,6 +39,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/main_padding"
                     android:textStyle="bold"
                     android:text="@string/label_root"
                  />
@@ -60,6 +61,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/main_padding"
                     android:textStyle="bold"
                     android:text="@string/label_active"
                 />

@@ -18,6 +18,16 @@
         android:paddingRight="@dimen/treelist_padding_ends"
         tools:context="com.sjmeunier.arborfamiliae.MainActivity">
     </ListView>
+    <TextView
+        android:id="@+id/empty_tree_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_empty_tree_list"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/treelist_padding_ends"
+        android:paddingRight="@dimen/treelist_padding_ends"
+        android:paddingTop="@dimen/treelist_padding_ends"
+        android:visibility="gone" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/button_create_tree"

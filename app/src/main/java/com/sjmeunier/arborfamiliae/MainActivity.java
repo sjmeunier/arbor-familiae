@@ -112,21 +112,25 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu navMenu = navigationView.getMenu();
 
-        if (findViewById(R.id.main_fragment_container) != null) {
+        try {
+            if (findViewById(R.id.main_fragment_container) != null) {
 
-            if (treeId == 0) {
-                Fragment fragment = new TreeListFragment();
-                getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragment).commit();
+                if (treeId == 0) {
+                    Fragment fragment = new TreeListFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragment).commit();
 
-                navMenu.findItem(R.id.nav_treelist).setChecked(true);
-                setTitle(navMenu.findItem(R.id.nav_treelist).getTitle());
-            } else {
-                Fragment fragment = new IndividualBiographicalFragment();
-                getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragment).commit();
+                    navMenu.findItem(R.id.nav_treelist).setChecked(true);
+                    setTitle(navMenu.findItem(R.id.nav_treelist).getTitle());
+                } else {
+                    Fragment fragment = new IndividualBiographicalFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, fragment).commit();
 
-                navMenu.findItem(R.id.nav_individual_details).setChecked(true);
-                setTitle(navMenu.findItem(R.id.nav_individual_details).getTitle());
+                    navMenu.findItem(R.id.nav_individual_details).setChecked(true);
+                    setTitle(navMenu.findItem(R.id.nav_individual_details).getTitle());
+                }
             }
+        } catch (Exception e) {
+            //State changed throwing error (most likely)
         }
     }
 
@@ -500,8 +504,12 @@ public class MainActivity extends AppCompatActivity
                 loadInitialFragment(0);
             }
             setMenuVisibility();
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
+            try {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            } catch (Exception e) {
+                //Most likely an orientation change here
             }
             this.context = null;
         }

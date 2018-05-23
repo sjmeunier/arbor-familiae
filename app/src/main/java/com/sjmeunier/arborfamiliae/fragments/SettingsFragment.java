@@ -26,12 +26,8 @@ public class SettingsFragment extends PreferenceFragment {
         fanchartGenerationsPreference.setSummary(fanchartGenerationsPreference.getEntry());
         ListPreference treechartGenerationsPreference = (ListPreference)findPreference("treechart_generations_preference");
         treechartGenerationsPreference.setSummary(treechartGenerationsPreference.getEntry());
-        ListPreference heatmapGenerationsPreference = (ListPreference)findPreference("heatmap_generations_preference");
-        heatmapGenerationsPreference.setSummary(heatmapGenerationsPreference.getEntry());
         ListPreference nameFormatPreference = (ListPreference)findPreference("nameformat_preference");
         nameFormatPreference.setSummary(nameFormatPreference.getEntry());
-        ListPreference heatmapEventsPreference = (ListPreference)findPreference("heatmap_events_preference");
-        heatmapEventsPreference.setSummary(heatmapEventsPreference.getEntry());
     }
 
     SharedPreferences.OnSharedPreferenceChangeListener spChanged = new

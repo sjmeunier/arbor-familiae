@@ -190,8 +190,9 @@ public class TreeListFragment extends Fragment{
 
         @Override
         protected void onPostExecute(String result) {
-
-            progressDialog.dismiss();
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
             reloadTreeList();
             this.context = null;

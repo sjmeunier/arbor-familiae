@@ -287,7 +287,9 @@ public class RelationshipFragment extends Fragment{
         @Override
         protected void onPostExecute(Boolean result) {
 
-            progressDialog.dismiss();
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
 
             relationshipCanvas.configureChart(rootLineage, targetLineage, ancestorSpouse, nameFormat);
             this.context = null;

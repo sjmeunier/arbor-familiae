@@ -366,7 +366,9 @@ public class ReportsFragment extends Fragment{
         @Override
         protected void onPostExecute(Boolean result) {
 
-            progressDialog.dismiss();
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             if (result) {
                 File file = new File(activity.getFilesDir(), "report.txt");
                 Uri sharedFileUri = FileProvider.getUriForFile(activity, "com.sjmeunier.arborfamiliae.chartfileprovider", file);
@@ -446,7 +448,9 @@ public class ReportsFragment extends Fragment{
         @Override
         protected void onPostExecute(Boolean result) {
 
-            progressDialog.dismiss();
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             if (result) {
                 TextView reportOutput = mainActivity.findViewById(R.id.report_output);
                 reportOutput.setVisibility(View.VISIBLE);

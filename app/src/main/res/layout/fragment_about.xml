@@ -179,22 +179,6 @@
             android:layout_marginLeft="@dimen/main_padding"
             android:layout_marginRight="@dimen/main_padding"
             android:textStyle="bold"
-            android:id="@+id/about_heatmap_title"
-            android:text="@string/about_heatmap_header" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/main_padding"
-            android:layout_marginRight="@dimen/main_padding"
-            android:layout_marginBottom="10dp"
-            android:id="@+id/about_heatmap_text"
-            android:text="@string/about_heatmap_description" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/main_padding"
-            android:layout_marginRight="@dimen/main_padding"
-            android:textStyle="bold"
             android:id="@+id/about_reports_title"
             android:text="@string/about_reports_header" />
         <TextView

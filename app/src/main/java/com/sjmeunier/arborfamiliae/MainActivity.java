@@ -200,9 +200,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_tree:
                 fragmentClass = TreeChartFragment.class;
                 break;
-            case R.id.nav_heatmap:
-                fragmentClass = HeatmapFragment.class;
-                break;
             case R.id.nav_fanchart:
                 fragmentClass = FanchartFragment.class;
                 break;
@@ -367,7 +364,6 @@ public class MainActivity extends AppCompatActivity
             navMenu.findItem(R.id.nav_fanchart).setVisible(false);
             navMenu.findItem(R.id.nav_relationship).setVisible(false);
             navMenu.findItem(R.id.nav_lines_of_descent).setVisible(false);
-            navMenu.findItem(R.id.nav_heatmap).setVisible(false);
             navMenu.findItem(R.id.nav_reports).setVisible(false);
             navMenu.findItem(R.id.nav_recent).setVisible(false);
         } else {
@@ -377,7 +373,6 @@ public class MainActivity extends AppCompatActivity
             navMenu.findItem(R.id.nav_fanchart).setVisible(true);
             navMenu.findItem(R.id.nav_relationship).setVisible(true);
             navMenu.findItem(R.id.nav_lines_of_descent).setVisible(true);
-            navMenu.findItem(R.id.nav_heatmap).setVisible(true);
             navMenu.findItem(R.id.nav_reports).setVisible(true);
             navMenu.findItem(R.id.nav_recent).setVisible(true);
         }
@@ -505,7 +500,9 @@ public class MainActivity extends AppCompatActivity
                 loadInitialFragment(0);
             }
             setMenuVisibility();
-            progressDialog.dismiss();
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             this.context = null;
         }
         @Override

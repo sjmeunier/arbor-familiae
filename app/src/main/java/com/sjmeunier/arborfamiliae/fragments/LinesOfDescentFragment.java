@@ -160,7 +160,9 @@ public class LinesOfDescentFragment extends Fragment{
         @Override
         protected void onPostExecute(Boolean result) {
 
-            progressDialog.dismiss();
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
 
             linesOfDescentCanvas.configureChart(mainActivity.activeIndividual != null && mainActivity.rootIndividualId > 0 && mainActivity.rootIndividualId == mainActivity.activeIndividual.individualId, lineages, mainActivity, nameFormat);
             this.context = null;

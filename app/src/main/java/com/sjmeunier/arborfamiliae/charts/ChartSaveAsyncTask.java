@@ -49,7 +49,9 @@ public class ChartSaveAsyncTask extends AsyncTask<Bitmap, Integer, File> {
     @Override
     protected void onPostExecute(File file) {
 
-        progressDialog.dismiss();
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
         if (file != null) {
             Uri sharedFileUri = FileProvider.getUriForFile(context, "com.sjmeunier.arborfamiliae.chartfileprovider", file);
             Intent intent = new Intent(Intent.ACTION_SEND);
